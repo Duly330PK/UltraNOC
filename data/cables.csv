@@ -1,0 +1,2 @@
+id,from_device,to_device,length_km,fiber_type,core_count
+cbl1,router1,switch1,5,SMF,2

@@ -1,0 +1,1 @@
+export const formatStatus = (status) => status.toUpperCase();

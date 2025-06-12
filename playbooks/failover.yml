@@ -1,0 +1,3 @@
+steps:
+  - simulate fiber-break fiber-13
+  - check alarms

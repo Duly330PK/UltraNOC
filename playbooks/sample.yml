@@ -1,0 +1,4 @@
+device: edge-router
+commands:
+  - show ip route
+  - show interfaces

@@ -1,0 +1,7 @@
+[
+  {
+    "profile": "default",
+    "pattern": "constant",
+    "rate_mbps": 100
+  }
+]

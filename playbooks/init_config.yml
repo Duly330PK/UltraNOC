@@ -1,0 +1,4 @@
+device: core-switch-1
+config:
+  - hostname core-sw1
+  - enable secret noc123
