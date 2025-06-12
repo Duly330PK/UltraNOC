@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from app.routers import cli, devices, topology, users, alarms, tickets, simulation
 from app.simulation import nat  # <- NAT-Router importieren
 from app.simulation import failover  # <- Import
+from app.simulation import live_flow
 
 app = FastAPI(title="UltraNOC API")
 
@@ -15,3 +16,5 @@ app.include_router(tickets.router, prefix="/api/v1/tickets")
 app.include_router(simulation.router, prefix="/api/v1/simulation")
 app.include_router(nat.router, prefix="/api/v1/simulation/nat", tags=["NAT"])  # <- NAT-Router einbinden
 app.include_router(failover.router, prefix="/api/v1/simulation/failover", tags=["Failover"])  # <- Router einbinden
+app.include_router(live_flow.router, prefix="/api/v1/simulation/live", tags=["Traffic"])
+
