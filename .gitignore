@@ -1,3 +1,10 @@
+# Python-Bytecode
 *.pyc
 __pycache__/
+
+# Virtuelle Environments (ggf. beide Varianten abdecken)
 venv/
+.venv/
+
+# Node modules (Frontend-Abhängigkeiten)
+node_modules/

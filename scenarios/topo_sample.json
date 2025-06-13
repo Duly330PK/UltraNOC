@@ -1,1 +1,4 @@
-{ "nodes": ["r1", "r2"], "links": [ ["r1", "r2"] ] }
+﻿{
+  "description": "Test scenario",
+  "devices": ["R1", "SW1"]
+}

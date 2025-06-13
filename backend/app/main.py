@@ -4,6 +4,7 @@ from app.simulation import nat  # <- NAT-Router importieren
 from app.simulation import failover  # <- Import
 from app.simulation import live_flow
 from app.routers import roles
+from app.routers import scenarios, fiber_types
 
 app = FastAPI(title="UltraNOC API")
 
@@ -19,4 +20,6 @@ app.include_router(nat.router, prefix="/api/v1/simulation/nat", tags=["NAT"])  #
 app.include_router(failover.router, prefix="/api/v1/simulation/failover", tags=["Failover"])  # <- Router einbinden
 app.include_router(live_flow.router, prefix="/api/v1/simulation/live", tags=["Traffic"])
 app.include_router(roles.router, prefix="/api/v1/roles", tags=["Roles"])
+app.include_router(scenarios.router, prefix="/api/v1/scenario", tags=["Scenarios"])
+app.include_router(fiber_types.router, prefix="/api/v1/fiber", tags=["Fiber"])
 
