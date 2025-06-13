@@ -1,0 +1,9 @@
+{
+  "regions": [
+    "edge",
+    "metro",
+    "core"
+  ],
+  "project": "UltraNOC Core",
+  "version": "1.0"
+}

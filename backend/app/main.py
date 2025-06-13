@@ -9,6 +9,7 @@ from app.routers import network_quality
 from app.routers import grafik_export
 from app.routers import audit_log, vlans
 from app.routers import session_data
+from app.routers import user_preferences, topology_meta
 
 app = FastAPI(title="UltraNOC API")
 
@@ -31,3 +32,5 @@ app.include_router(grafik_export.router, prefix="/api/v1/export", tags=["Export"
 app.include_router(audit_log.router, prefix="/api/v1/audit", tags=["Audit"])
 app.include_router(vlans.router, prefix="/api/v1/vlans", tags=["VLANs"])
 app.include_router(session_data.router, prefix="/api/v1/sessions", tags=["Sessions"])
+app.include_router(user_preferences.router, prefix="/api/v1/preferences", tags=["Preferences"])
+app.include_router(topology_meta.router, prefix="/api/v1/topology", tags=["Metadata"])
