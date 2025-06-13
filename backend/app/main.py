@@ -11,6 +11,7 @@ from app.routers import audit_log, vlans
 from app.routers import session_data
 from app.routers import user_preferences, topology_meta
 from app.routers import alerting, maintenance
+from app.routers import dns_lookup, syslog_collector
 
 app = FastAPI(title="UltraNOC API")
 
@@ -37,3 +38,5 @@ app.include_router(user_preferences.router, prefix="/api/v1/preferences", tags=[
 app.include_router(topology_meta.router, prefix="/api/v1/topology", tags=["Metadata"])
 app.include_router(alerting.router, prefix="/api/v1/alerts", tags=["Alerts"])
 app.include_router(maintenance.router, prefix="/api/v1/maintenance", tags=["Maintenance"])
+app.include_router(dns_lookup.router, prefix="/api/v1/tools/dns", tags=["DNS"])
+app.include_router(syslog_collector.router, prefix="/api/v1/syslog", tags=["Syslog"])
