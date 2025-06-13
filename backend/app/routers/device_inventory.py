@@ -1,13 +1,11 @@
 from fastapi import APIRouter
-from typing import List
-import json
 import os
 
 router = APIRouter()
 
 DEVICE_FILE = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "data", "devices.yml"))
 
-@router.get("/inventory")
+@router.get("/list")
 def get_inventory():
     if os.path.exists(DEVICE_FILE):
         with open(DEVICE_FILE, "r") as f:

@@ -7,7 +7,7 @@ router = APIRouter()
 class PingRequest(BaseModel):
     ip: str
 
-@router.post("/ping")
+@router.post("/simulate")
 def ping(req: PingRequest):
     reachable = random.choice([True] * 9 + [False])  # 90% reachable
     return {"ip": req.ip, "reachable": reachable}

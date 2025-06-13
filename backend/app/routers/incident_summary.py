@@ -1,5 +1,4 @@
 from fastapi import APIRouter
-from typing import List
 import uuid
 from datetime import datetime
 
@@ -18,6 +17,6 @@ def raise_incident(source: str, impact: str):
     incidents.append(entry)
     return entry
 
-@router.get("/all")
-def get_all():
+@router.get("/summary")
+def get_summary():
     return incidents

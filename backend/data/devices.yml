@@ -1,0 +1,6 @@
+- name: Switch1
+  model: Catalyst
+- name: RouterX
+  model: Juniper
+- name: FirewallA
+  model: PaloAlto

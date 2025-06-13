@@ -22,6 +22,6 @@ def report_health(entry: DeviceHealth):
     device_health_data.append(entry)
     return entry
 
-@router.get("/latest", response_model=List[DeviceHealth])
-def get_latest():
+@router.get("/status", response_model=List[DeviceHealth])
+def get_status():
     return device_health_data
