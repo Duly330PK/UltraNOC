@@ -6,6 +6,7 @@ from app.simulation import live_flow
 from app.routers import roles
 from app.routers import scenarios, fiber_types
 from app.routers import network_quality
+from app.routers import grafik_export
 
 app = FastAPI(title="UltraNOC API")
 
@@ -24,4 +25,4 @@ app.include_router(roles.router, prefix="/api/v1/roles", tags=["Roles"])
 app.include_router(scenarios.router, prefix="/api/v1/scenario", tags=["Scenarios"])
 app.include_router(fiber_types.router, prefix="/api/v1/fiber", tags=["Fiber"])
 app.include_router(network_quality.router, prefix="/api/v1/network", tags=["Quality"])
-
+app.include_router(grafik_export.router, prefix="/api/v1/export", tags=["Export"])
