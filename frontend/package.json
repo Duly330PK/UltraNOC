@@ -1,6 +1,7 @@
 {
   "name": "ultranoc-frontend",
-  "version": "0.1.0",
+  "version": "1.0.0",
+  "private": true,
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -9,11 +10,14 @@
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.11.2",
-    "styled-components": "^6.0.4"
+    "react-router-dom": "^6.14.2",
+    "styled-components": "^6.1.19"
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "^4.5.2",
-    "vite": "^5.2.0"
+    "@vitejs/plugin-react": "^4.0.3",
+    "autoprefixer": "^10.4.14",
+    "postcss": "^8.4.24",
+    "tailwindcss": "^3.3.2",
+    "vite": "^4.3.9"
   }
 }

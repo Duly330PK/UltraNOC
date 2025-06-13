@@ -1,3 +1,0 @@
-project: UltraNOC
-structure: auto
-components: [backend, frontend, db, cli, docs]

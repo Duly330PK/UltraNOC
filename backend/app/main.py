@@ -20,6 +20,7 @@ from app.routers import device_health, scheduled_tasks, incident_summary
 from app.routers import cable_diagnostics, access_log, interface_stats
 from app.routers import device_telemetry, ping_tool, flow_archive
 from app.routers import license_check, ws_telemetry, cli_playback
+from app.routers import auth  # hinzufügen
 
 app = FastAPI(title="UltraNOC API")
 
@@ -72,3 +73,4 @@ app.include_router(flow_archive.router, prefix="/api/v1/archive", tags=["Flow Ar
 app.include_router(license_check.router, prefix="/api/v1/license", tags=["License"])
 app.include_router(ws_telemetry.router, tags=["WebSocket"])
 app.include_router(cli_playback.router, prefix="/api/v1/playback", tags=["CLI Playback"])
+app.include_router(auth.router, prefix="/api/v1/auth") 
