@@ -7,6 +7,8 @@ from app.routers import roles
 from app.routers import scenarios, fiber_types
 from app.routers import network_quality
 from app.routers import grafik_export
+from app.routers import audit_log, vlans
+from app.routers import session_data
 
 app = FastAPI(title="UltraNOC API")
 
@@ -26,3 +28,6 @@ app.include_router(scenarios.router, prefix="/api/v1/scenario", tags=["Scenarios
 app.include_router(fiber_types.router, prefix="/api/v1/fiber", tags=["Fiber"])
 app.include_router(network_quality.router, prefix="/api/v1/network", tags=["Quality"])
 app.include_router(grafik_export.router, prefix="/api/v1/export", tags=["Export"])
+app.include_router(audit_log.router, prefix="/api/v1/audit", tags=["Audit"])
+app.include_router(vlans.router, prefix="/api/v1/vlans", tags=["VLANs"])
+app.include_router(session_data.router, prefix="/api/v1/sessions", tags=["Sessions"])
