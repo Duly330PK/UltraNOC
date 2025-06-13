@@ -12,6 +12,14 @@ from app.routers import session_data
 from app.routers import user_preferences, topology_meta
 from app.routers import alerting, maintenance
 from app.routers import dns_lookup, syslog_collector
+from app.routers import device_ports, topomap_preview, ipv6_tools
+from app.routers import cgnat_lookup, maintenance_schedule, system_probe
+from app.routers import event_trigger, ping_simulator, snapshot_handler
+from app.routers import cgnat_pool, device_inventory, topo_export
+from app.routers import device_health, scheduled_tasks, incident_summary
+from app.routers import cable_diagnostics, access_log, interface_stats
+from app.routers import device_telemetry, ping_tool, flow_archive
+from app.routers import license_check, ws_telemetry, cli_playback
 
 app = FastAPI(title="UltraNOC API")
 
@@ -40,3 +48,27 @@ app.include_router(alerting.router, prefix="/api/v1/alerts", tags=["Alerts"])
 app.include_router(maintenance.router, prefix="/api/v1/maintenance", tags=["Maintenance"])
 app.include_router(dns_lookup.router, prefix="/api/v1/tools/dns", tags=["DNS"])
 app.include_router(syslog_collector.router, prefix="/api/v1/syslog", tags=["Syslog"])
+app.include_router(device_ports.router, prefix="/api/v1/devices", tags=["Ports"])
+app.include_router(topomap_preview.router, prefix="/api/v1/topology", tags=["Preview"])
+app.include_router(ipv6_tools.router, prefix="/api/v1/tools/ipv6", tags=["IPv6"])
+app.include_router(cgnat_lookup.router, prefix="/api/v1/cgnat", tags=["CGNAT"])
+app.include_router(maintenance_schedule.router, prefix="/api/v1/maintenance", tags=["Schedule"])
+app.include_router(system_probe.router, prefix="/api/v1/system", tags=["Health"])
+app.include_router(event_trigger.router, prefix="/api/v1/events", tags=["Events"])
+app.include_router(ping_simulator.router, prefix="/api/v1/tools", tags=["Ping"])
+app.include_router(snapshot_handler.router, prefix="/api/v1/snapshots", tags=["Snapshots"])
+app.include_router(cgnat_pool.router, prefix="/api/v1/cgnat", tags=["CGNAT"])
+app.include_router(device_inventory.router, prefix="/api/v1/inventory", tags=["Inventory"])
+app.include_router(topo_export.router, prefix="/api/v1/topology/export", tags=["Topology Export"])
+app.include_router(device_health.router, prefix="/api/v1/devices/health", tags=["Device Health"])
+app.include_router(scheduled_tasks.router, prefix="/api/v1/scheduler", tags=["Scheduler"])
+app.include_router(incident_summary.router, prefix="/api/v1/incidents", tags=["Incidents"])
+app.include_router(cable_diagnostics.router, prefix="/api/v1/cables/diagnostics", tags=["Cables"])
+app.include_router(access_log.router, prefix="/api/v1/logs", tags=["Access Logs"])
+app.include_router(interface_stats.router, prefix="/api/v1/interfaces", tags=["Interface Stats"])
+app.include_router(device_telemetry.router, prefix="/api/v1/telemetry", tags=["Telemetry"])
+app.include_router(ping_tool.router, prefix="/api/v1/tools", tags=["Ping Tool"])
+app.include_router(flow_archive.router, prefix="/api/v1/archive", tags=["Flow Archive"])
+app.include_router(license_check.router, prefix="/api/v1/license", tags=["License"])
+app.include_router(ws_telemetry.router, tags=["WebSocket"])
+app.include_router(cli_playback.router, prefix="/api/v1/playback", tags=["CLI Playback"])
