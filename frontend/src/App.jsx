@@ -5,7 +5,8 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
 import ProtectedRoute from "./components/ProtectedRoute";
-import Layout from "./components/layout/Layout";
+import Layout from "./components/Layout/Layout";
+import TopologyView from "./pages/TopologyView";
 
 const App = () => {
   return (
@@ -21,6 +22,7 @@ const App = () => {
           }
         >
           <Route path="dashboard" element={<DashboardPage />} />
+          <Route path="topology" element={<TopologyView />} />
         </Route>
         <Route path="*" element={<LoginPage />} />
       </Routes>

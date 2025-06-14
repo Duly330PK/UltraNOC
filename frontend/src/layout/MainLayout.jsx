@@ -1,9 +1,9 @@
-// C:\noc_project\UltraNOC\frontend\src\layout\MainLayout.jsx
+// C:\noc_project\UltraNOC\frontend\src\Layout\MainLayout.jsx
 
 import React from "react";
 import { Outlet } from "react-router-dom";
-import Sidebar from "../components/Layout/Sidebar";
-import Header from "../components/layout/Header";
+import Sidebar from "../contexts/AuthContext";
+import Header from "../components/Layout/Header";
 
 function MainLayout() {
   return (

@@ -1,0 +1,108 @@
+{
+  "devices": [
+    {
+      "id": "core-dus",
+      "name": "Core Düsseldorf",
+      "type": "core",
+      "ip": "10.0.0.1",
+      "lat": 51.2277,
+      "lon": 6.7735
+    },
+    {
+      "id": "access-kleve",
+      "name": "Access Kleve",
+      "type": "access",
+      "ip": "10.0.1.1",
+      "lat": 51.7883,
+      "lon": 6.1395
+    },
+    {
+      "id": "access-wesel",
+      "name": "Access Wesel",
+      "type": "access",
+      "ip": "10.0.1.2",
+      "lat": 51.6644,
+      "lon": 6.6204
+    },
+    {
+      "id": "access-bocholt",
+      "name": "Access Bocholt",
+      "type": "access",
+      "ip": "10.0.1.3",
+      "lat": 51.8388,
+      "lon": 6.6153
+    },
+    {
+      "id": "ont-rees",
+      "name": "ONT Rees",
+      "type": "ont",
+      "ip": "10.0.2.1",
+      "lat": 51.7623,
+      "lon": 6.3884
+    },
+    {
+      "id": "ont-haldern",
+      "name": "ONT Haldern",
+      "type": "ont",
+      "ip": "10.0.2.2",
+      "lat": 51.7355,
+      "lon": 6.4020
+    }
+  ],
+  "links": [
+    {
+      "id": "link-dus-kleve",
+      "source": "core-dus",
+      "target": "access-kleve",
+      "type": "fiber",
+      "length": 74000,
+      "db_loss": 13.2,
+      "status": "up"
+    },
+    {
+      "id": "link-dus-wesel",
+      "source": "core-dus",
+      "target": "access-wesel",
+      "type": "fiber",
+      "length": 57000,
+      "db_loss": 10.1,
+      "status": "up"
+    },
+    {
+      "id": "link-dus-bocholt",
+      "source": "core-dus",
+      "target": "access-bocholt",
+      "type": "fiber",
+      "length": 78000,
+      "db_loss": 14.4,
+      "status": "up"
+    },
+    {
+      "id": "link-wesel-rees",
+      "source": "access-wesel",
+      "target": "ont-rees",
+      "type": "fiber",
+      "length": 17000,
+      "db_loss": 2.3,
+      "status": "up"
+    },
+    {
+      "id": "link-bocholt-haldern",
+      "source": "access-bocholt",
+      "target": "ont-haldern",
+      "type": "fiber",
+      "length": 9500,
+      "db_loss": 1.4,
+      "status": "up"
+    },
+    {
+      "id": "redundant-wesel-bocholt",
+      "source": "access-wesel",
+      "target": "access-bocholt",
+      "type": "fiber",
+      "length": 29000,
+      "db_loss": 5.5,
+      "status": "up"
+    }
+  ]
+}

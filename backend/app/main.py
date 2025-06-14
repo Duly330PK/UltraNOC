@@ -24,6 +24,9 @@ from app.routers import auth
 from app.routers import device_metrics
 from app.routers import config_store
 from fastapi.middleware.cors import CORSMiddleware
+from app.routers import topology_router
+from app.routers import topology
+from app.routers import topology_path
 
 
 app = FastAPI(title="UltraNOC API")
@@ -89,3 +92,5 @@ app.include_router(cli_playback.router, prefix="/api/v1/playback", tags=["CLI Pl
 app.include_router(auth.router, prefix="/api/v1/auth") 
 app.include_router(device_metrics.router, prefix="/api/v1/metrics", tags=["Metrics"])
 app.include_router(config_store.router, prefix="/api/v1/config", tags=["Config Store"])
+app.include_router(topology_router.router)
+app.include_router(topology_path.router, prefix="/api/topology")

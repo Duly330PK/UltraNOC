@@ -1,3 +1,70 @@
+AM NEUSTEN:
+📄 Inhalt: huawei_ma5800x17.md
+markdown
+Copy
+Edit
+# Huawei MA5800-X17 – Optical Line Terminal (OLT)
+
+## Überblick
+- **Hersteller:** Huawei
+- **Modell:** MA5800-X17
+- **Betriebssystem:** VRP (Versatile Routing Platform)
+- **Einsatzbereich:** GPON/XG-PON Aggregation, Triple Play, VLAN-Tagging
+
+## Ports
+| Port        | Typ             | Beschreibung                       |
+|-------------|------------------|------------------------------------|
+| gpon 0/1/1  | GPON Port        | Verbindung zu Splitter/ONTs        |
+| eth 0/9     | GE Uplink        | Upstream zum Aggregation Switch    |
+| mgmt 0      | Management       | Lokaler Zugriff via SSH/Telnet     |
+| console     | Konsole          | Serielle Erstkonfiguration         |
+
+## CLI-Beispiele (Huawei VRP)
+```cli
+<Huawei> enable
+<Huawei> config
+[Huawei] interface gpon 0/1
+[Huawei-gpon0/1] onu 1 type HG8245H sn 48575443C31A9F3F
+[Huawei-gpon0/1] onu 1 port 1 eth 1
+[Huawei-gpon0/1] quit
+[Huawei] interface vlanif 200
+[Huawei-Vlanif200] ip address 192.168.200.1 255.255.255.0
+Metriken & Statusfelder
+RX Optical Power pro ONU
+
+Temperatur, Spannung, CPU-Last
+
+ONU Online/Offline Status
+
+VLAN- und PPPoE-Session Status
+
+Alarme & Fehler
+%GPON-3-LOS: Loss of Signal auf Port gpon0/1/1
+
+%ONU-4-DISCONNECT: ONU 1 unerwartet getrennt
+
+%PPPOE-5-LIMIT: Session-Limit überschritten
+
+Physikalische Darstellung
+17 Steckplätze (X17), Frontzugang
+
+LEDs: PWR, ALM, RUN, LOS, PON
+
+Uplink-Slots für GE/10GE Karten
+
+Langlebiger Betrieb in zentralem Verteilerschrank
+
+Simulationseinfluss
+Splitter-/ONT-Ausfälle propagieren über die OLT
+
+VLAN-Missmatch → Dienstausfall bei Kunden
+
+Konfiguration via CLI beeinflusst Dashboard live
+
+Topologie-Verknüpfungen
+Upstream: Huawei S6720 Aggregation Switch
+
+Downstream: Splitter + ONT (HG8245H)
 NEUER:
 # Huawei MA5800-X17 – Optical Line Terminal (OLT)
 

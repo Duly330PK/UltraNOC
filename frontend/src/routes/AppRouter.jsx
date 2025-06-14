@@ -6,7 +6,7 @@ import LoginPage from "../pages/LoginPage";
 import DashboardPage from "../pages/DashboardPage";
 import DeviceOverviewPage from "../pages/DeviceOverviewPage";
 import ProtectedRoute from "../components/ProtectedRoute";
-import Layout from "../components/layout/Layout";
+import Layout from "../components/Layout/Layout";
 
 export default function AppRouter() {
   return (

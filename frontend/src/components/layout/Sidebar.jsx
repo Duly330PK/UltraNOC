@@ -1,4 +1,6 @@
-// C:\noc_project\UltraNOC\frontend\src\components\layout\Sidebar.jsx
+// Pfad: frontend/src/components/Layout/Sidebar.jsx
+
+
 
 import React from "react";
 import { NavLink } from "react-router-dom";
@@ -9,6 +11,7 @@ const Sidebar = () => {
     { path: "/devices", label: "Geräte" },
     { path: "/metrics", label: "Metriken" },
     { path: "/alerts", label: "Alarme" },
+    { path: "/topology", label: "Topologie" },
     { path: "/export", label: "Export" },
   ];
 

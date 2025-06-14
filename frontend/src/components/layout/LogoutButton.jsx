@@ -1,4 +1,4 @@
-// C:\noc_project\UltraNOC\frontend\src\components\layout\LogoutButton.jsx
+// C:\noc_project\UltraNOC\frontend\src\components\Layout\LogoutButton.jsx
 
 import React, { useContext } from "react";
 import { AuthContext } from "../../contexts/AuthContext"; // ✅ korrigierter Pfad

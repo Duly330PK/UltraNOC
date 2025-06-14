@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "grep": "^0.1.0",
+    "leaflet": "^1.9.4",
+    "react-leaflet": "^4.2.1",
+    "recharts": "^2.15.3"
+  }
+}
