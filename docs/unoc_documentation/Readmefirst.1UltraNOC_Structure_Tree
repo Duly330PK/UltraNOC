@@ -1,0 +1,163 @@
+📁 backend/
+main.py
+
+database.py
+
+__init__.py
+
+app/__init__.py
+
+app/models/user.py
+
+app/routers/auth.py
+
+app/routers/auth_router.py
+
+app/routers/users.py
+
+app/routers/device_telemetry.py
+
+app/routers/path_metrics.py
+
+app/routers/topology.py
+
+app/routers/topology_path.py
+
+app/routers/topology_router.py
+
+app/schemas/auth_schemas.py
+
+app/simulation/cables.py
+
+app/simulation/redundancy.py
+
+init.sql
+
+.env
+
+📁 frontend/
+vite.config.js
+
+index.html
+
+package.json
+
+package-lock.json
+
+📁 frontend/public/
+favicon.ico
+
+leaflet/marker-icon.png
+
+leaflet/marker-shadow.png
+
+data/
+
+📁 frontend/src/
+App.jsx
+
+📁 frontend/src/components/layout/
+Layout.jsx
+
+Header.jsx
+
+Sidebar.jsx
+
+LogoutButton.jsx
+
+📁 frontend/src/components/Map/
+RedundancyPathPanel.jsx
+
+PathPanel.jsx
+
+CableInfoPanel.jsx
+
+PathMetricsPanel.jsx
+
+RedundancyCableInfoPanel.jsx
+
+📁 frontend/src/components/Widgets/
+AlarmPanel.jsx
+
+MetricsPanel.jsx
+
+ClockWidget.jsx
+
+📁 frontend/src/components/dwdm/
+DWDMWidget.jsx
+
+📁 frontend/src/components/Fiber/
+(Dateien nicht einzeln aufgeführt)
+
+📁 frontend/src/assets/icons/
+(Dateien nicht einzeln aufgeführt)
+
+📁 frontend/src/pages/
+TopologyView.jsx
+
+TopologyView - Kopie.jsx
+
+DashboardPage.jsx
+
+DeviceOverviewPage.jsx
+
+LoginPage.jsx
+
+Login_legacy.jsx
+
+SettingsPage.jsx
+
+Dashboard.jsx
+
+📁 frontend/src/contexts/
+AuthContext.jsx
+
+📁 frontend/src/hooks/
+useTopologyLinks.js
+
+📁 frontend/src/services/topology/
+useTopologyData.js
+
+usePathData.js
+
+usePathMetrics.js
+
+📁 frontend/src/layout/
+MainLayout.jsx
+
+📁 frontend/src/routes/
+AppRouter.jsx
+
+AppRouter_legacy.jsx
+
+📁 frontend/src/utils/
+getDeviceIcon.js
+
+📁 data/
+topology/core_topology.json
+
+📁 docs/
+project_features.txt
+
+iproute_cgnat_clear.md
+
+cgnat_doc.md
+
+cgnat_forensik.md
+
+iprouting_im_deutschen_ftth.md
+
+📁 docs/devices/
+huawei_ma5800x17.md
+
+(weitere Gerätedokumente geplant)
+
+📁 docs/update_summary/
+ultranoc_update_6_12_summary.md
+
+ultranoc_update_6_13_summary.md
+
+... (weitere vorhandene/zu erzeugende Updates)
+
+📁 docs/dev-examples/
+(nicht im Detail aufgelistet)
