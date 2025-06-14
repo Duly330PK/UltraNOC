@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Outlet } from "react-router-dom";
-import Sidebar from "../components/layout/Sidebar";
+import Sidebar from "../components/Layout/Sidebar";
 import Header from "../components/layout/Header";
 
 function MainLayout() {

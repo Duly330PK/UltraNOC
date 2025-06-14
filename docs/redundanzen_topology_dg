@@ -1,0 +1,431 @@
+Skip to content
+Chat history
+
+You said:
+ich brauche für meine deutsche glasfaser simulation genaue daten wie Fiber Route Redundancy und Redundant Ring Topology genau funktionieren um es umzusetzen
+ChatGPT said:
+Damit ich dir gezielt helfen kann, könntest du bitte angeben:
+
+Geht es um die physikalische Umsetzung (z. B. realitätsnahe Simulation von Trassen, Knoten, POPs), oder primär um die logische/topologische Struktur?
+
+Welchen Detaillierungsgrad brauchst du? (z. B. Protokollverhalten bei Ausfällen, Layer 2/3 Redundanzlogik, automatische Umschaltung, LACP, etc.)
+
+Welche Rolle sollen aktive Komponenten wie OLTs, ROADM, oder Ethernet-Switches spielen?
+
+Nutzt du bereits bestimmte Tools oder Topologie-Frameworks (z. B. GNS3, ns-3, Unreal Engine, etc.)?
+
+Sobald ich das weiß, liefere ich dir technische Details, typische Architekturen und Konfigurationsmuster zur Redundanz in Glasfasernetzen (mit Fokus auf deutsche Standards wie sie z. B. Deutsche Glasfaser oder Telekom umsetzen).
+
+You said:
+in erster linie erstmal logische/topologische Struktur mit möglichst viel nähe zur deutschen glasfaser, 2. alles was du kriegen kannst, so genau wie du es recherchieren kannst. 3. alle komponenten werden realistisch simuliert. 4. noch nicht aber bei der komplexität wird dir was einfallen
+ChatGPT said:
+Alles klar. Ich recherchiere im Detail, wie Fiber Route Redundancy und Redundant Ring Topology in Deutschland – insbesondere bei der Deutschen Glasfaser – logisch und topologisch realisiert werden. Ich werde typische Architekturen, Netzhierarchien (z. B. POP-Standorte, Aggregation, Access), verwendete Technologien (z. B. GPON/XGS-PON, CWDM/DWDM), sowie Redundanzmechanismen (z. B. Ringprotokolle, Schutzumschaltung, Failoverzeiten) aufbereiten.
+
+Ich melde mich, sobald die vollständige Analyse für deine Simulation bereitsteht.
+
+Research completed in 5m · 30 sources · 149 searches
+Fiber Route Redundancy und Redundante Ring-Topologie bei Deutscher Glasfaser
+
+Glasfaser-Redundanz und Ring-Topologien in Deutschland
+Einleitung
+Glasfasernetze bilden das Rückgrat moderner Kommunikationsinfrastrukturen. Angesichts steigender Anforderungen an Verfügbarkeit und Ausfallsicherheit planen Netzbetreiber ihre Netze mit hoher Redundanz. Dabei kommen sowohl physikalische Maßnahmen (z. B. doppelte Leitungswege) als auch logische Mechanismen (Protokolle für automatisches Failover) zum Einsatz. Dieser Bericht untersucht die logische und topologische Umsetzung von “Fiber Route Redundancy” und “Redundant Ring Topology” in deutschen Glasfasernetzen – mit Schwerpunkt auf dem Anbieter Deutsche Glasfaser – und vergleicht übliche Topologien, Redundanzmechanismen sowie Best Practices von Netzbetreibern (z. B. Deutsche Glasfaser, Deutsche Telekom, NetCologne).
+Netz-Topologien mit Fokus auf Redundanz
+Glasfasernetze lassen sich logisch in verschiedene Topologien einteilen, von denen Punkt-zu-Punkt, Ring und Mesh besonders relevant sind. Im Hinblick auf Redundanz bieten diese unterschiedliche Vorteile:
+Punkt-zu-Punkt-Verbindungen: Hierbei sind zwei Knoten direkt verbunden. Diese Topologie ist einfach, aber allein nicht ausfallsicher – ein einzelner Faserschaden kappt die Verbindung komplett. Redundanz lässt sich nur durch mehrfache Punkt-zu-Punkt-Leitungen erreichen (z. B. zwei geografisch getrennte Fasern zwischen denselben Standorten). So bauen Betreiber oft zwei physisch getrennte Glasfasertrassen zwischen wichtigen Knoten, um Ausfälle einer Route aufzufangen (Streckenredundanz).
+Ring-Topologie: Mehrere Knoten sind in einem geschlossenen Ring verbunden, sodass jeder Standort zwei Wege in entgegengesetzter Richtung hat. Diese Ring-Struktur erhöht die Ausfallsicherheit signifikant: Wenn ein Kabel unterbrochen oder ein Knoten im Ring ausfällt, bleiben alle anderen Knoten über die Gegenrichtung erreichbar
+de.linkedin.com
+. Die Daten können den alternativen Pfad nehmen, wodurch ein einzelner Fehler toleriert wird
+cisco.com
+tarif4you.de
+. Dies sorgt für hohe Netzverfügbarkeit; z. B. gewährleistet ein Glasfaserring dank redundanter Anbindung Netzverfügbarkeit auf höchstem Niveau
+tarif4you.de
+.
+Mesh-Topologie (vermaschtes Netz): Jeder Knoten kann mit mehreren anderen verbunden sein, es gibt also mehrfache Pfade durch das Netz. Ein voll vermaschtes Backbone bietet die größte Redundanz, da bei Ausfall eines Links zahlreiche alternative Routen existieren. Allerdings steigt die Komplexität der Steuerung (Routing) mit der Anzahl der Verbindungen. Praktisch werden oft Teilmesh-Topologien verwendet, z. B. Kernnetze, in denen zentrale Knoten mehrfach untereinander verbunden sind (häufig in Kombination mit Ringstrukturen auf tieferen Ebenen). Eine Multi-Ring-Topologie ist ebenfalls gebräuchlich, wobei mehrere Ringe hierarchisch oder miteinander verbunden sind, um Redundanzen sicherzustellen
+bundesnetzagentur.de
+.
+Zusammenfassend gilt: Punkt-zu-Punkt-Netze benötigen duplizierte Leitungen zur Redundanz, Ringnetze bieten eingebauten Schutz gegen einen Ausfall, und Mesh-Netze bieten höchste, aber komplexe Redundanz. Netzbetreiber wählen oft eine Mischung – z. B. regionale Ringe im Access/Metro-Bereich und vermaschte Verbindungen im Core-Bereich – um eine Balance aus Zuverlässigkeit und Kosten zu erreichen
+glasfaserforum.de
+.
+Physikalische vs. logische Redundanz
+Physikalische Redundanz bezieht sich auf doppelte oder vielfältige Infrastrukturpfade. Beispiele sind zwei unabhängige Glasfaserkabel auf unterschiedlichen Trassen (Trassenredundanz) oder ringförmig verlegte Kabel, die einen zweiten physischen Weg bieten. In deutschen Netzen ist es üblich, für wichtige Routen zwei geographisch getrennte Trassen vorzusehen, sofern wirtschaftlich vertretbar. Allerdings wird bei neuen FTTH-Ausbaugebieten anfangs oft nur eine Hauptleitung verlegt; die zweite entsteht erst, wenn weitere Ausbaugebiete angeschlossen werden
+glasfaserforum.de
+. So berichtet ein Forumbeitrag über Deutsche Glasfaser: “Die Deutsche Glasfaser plant Redundanz ein, aber die Trassen dafür entstehen erst mit der Erschließung neuer Ausbaugebiete. Da werden also nicht zwei unabhängige Leitungen [...] gezogen, sondern Ausbaugebiete wie in einer Schleife aneinandergereiht, so dass nach dem Ringschluss jeder Ort von zwei Seiten erreichbar ist”
+glasfaserforum.de
+. Hier wird physische Redundanz also schrittweise durch Ringschlüsse erreicht, anstatt von Anfang an doppelte Kabel zu verlegen. Logische Redundanz bedeutet, dass Netzkomponenten und -protokolle so konfiguriert sind, dass im Fehlerfall automatisch umgeschaltet wird. Sie setzt oft physische Vielfalt voraus (mindestens zwei Verbindungswege), kümmert sich aber um automatisches Failover. Beispiele: Ein Switch besitzt zwei Uplink-Ports zu verschiedenen Verteilern; im Normalbetrieb ist einer inaktiv (oder beide aktiv im LAG), und bei Ausfall eines Pfads übernimmt der andere ohne manuelles Eingreifen. Logische Redundanz wird durch Netzprotokolle und Mechanismen auf verschiedenen OSI-Schichten umgesetzt (z. B. Spanning Tree auf Schicht 2 oder OSPF auf Schicht 3, siehe unten). Fazit: Physikalische Redundanz schafft die Grundlage (mehrere Kabel/Wege), während logische Redundanz mittels Protokollen dafür sorgt, dass diese Wege im Betrieb nutzbar bleiben und automatisch gewechselt wird, falls einer wegfällt. Optimalerweise ergänzen sich beide: z. B. zwei physisch getrennte Faserringe, die logisch so gesteuert sind, dass ein Ausfall unbemerkt für die Nutzer bleibt.
+Redundanzmechanismen auf Layer 2 (Data Link)
+In Layer-2-Netzen (Ethernet) gibt es klassische Mechanismen, um Schleifen zu vermeiden und Redundanzpfade bereitzustellen:
+Spanning Tree Protocol (STP) und Varianten: STP (IEEE 802.1D) ist ein älteres Protokoll, das Netzwerktopologien mit Schleifen in einen Baum umwandelt, indem redundante Links temporär blockiert werden. Fällt die primäre Verbindung aus, aktiviert STP den zuvor blockierten Pfad, um die Verbindung wiederherzustellen. Der klassische STP-Algorithmus benötigt jedoch relativ lange Umschaltzeiten – in Standardkonfiguration bis zu ~50 Sekunden, um eine neue Topologie zu berechnen
+de.wikipedia.org
+de.wikipedia.org
+. Verbesserte Versionen wie Rapid Spanning Tree (RSTP, IEEE 802.1w) reduzieren die Ausfallzeit erheblich: RSTP schafft eine Rekonvergenz in unter 1 Sekunde
+de.wikipedia.org
+, indem es schneller auf Änderungen reagiert (u. a. mit verkürzten Timern und direkter Absprache zwischen Switches). Moderne Multiple Spanning Tree Protocol (MSTP, IEEE 802.1s) ermöglicht zudem mehrere gleichzeitige Bäume (z. B. je VLAN) zur besseren Ausnutzung redundanter Links. Dennoch wird STP/RSTP in Provider-Netzen heute seltener auf Kernstrecken eingesetzt, da neuere Verfahren effizienter sind.
+Ethernet Ring Protection Switching (ERPS, ITU-T G.8032): Speziell für Ring-Topologien in Ethernet wurde ERPS standardisiert. Ähnlich dem Konzept der automatischen Schutzumschaltung aus SDH/SONET-Netzen bietet ERPS sehr schnelle Failover-Zeiten (nahe 50 ms)
+alliedtelesis.com
+. Im Ring wird ein Link (die Ring Protection Link, RPL) im Normalfall blockiert, um keine Schleife zu erzeugen. Wird ein Faserbruch an einer anderen Stelle detektiert, schaltet das Protokoll den geschützten Link innerhalb von ca. 50 Millisekunden frei, sodass der Datenverkehr nahtlos über die andere Richtung weiterlaufen kann
+alliedtelesis.com
+. Diese Reaktionszeit ähnelt der aus klassischen SDH-Ringen (Ziel: <50 ms). Möglich wird dies durch schnelle Link-Überwachung (z. B. kontinuierliche OAM-Heartbeat-Pakete im ~3,3 ms Intervall) und koordinierte Sperr-/Freigabe-Mechanismen im Ring
+documentation.nokia.com
+documentation.nokia.com
+. Viele Carrier in Metro-Netzen nutzen ERPS anstelle von STP, da es deterministisches und schnelleres Failover auf Layer 2 ermöglicht. (Anmerkung: Hersteller bewerben mit proprietären Ring-Protokollen teils noch geringere Umschaltzeiten von <30 ms
+black-box.de
+, doch in der Praxis hängt dies von Hardware und Parametern ab; 50 ms gilt als bewährter Standardwert.)
+Link Aggregation (LAG) / LACP: Bei der Link Aggregation (IEEE 802.3ad/802.1AX) werden zwei oder mehr physische Verbindungen zu einer logischen gebündelt. Aus Sicht höherer Protokolle existiert nur ein “dickerer” Link. Fällt eine der physischen Leitungen aus, übernehmen die verbleibenden automatisch dessen Traffic (ggf. mit reduzierter Gesamtbandbreite). Die Umschaltung passiert auf Hardwareebene praktisch verzögerungsfrei. LAG bietet also Frame-basierte Verteilung und Redundanz zugleich. Typische Anwendung: Uplink-Bündel zwischen Switches oder von Access-Switch zu Aggregation-Switch, um sowohl höhere Kapazität als auch Ausfallsicherheit zu erzielen. Das LACP-Protokoll sorgt dafür, dass nur aktive Links im Bündel genutzt werden und erkennt ausgefallene Leitungen sofort, sodass ein Failover im Bereich weniger Millisekunden erfolgt. Wichtig: LAG setzt parallele physische Pfade voraus (oft im selben Kabeltrasse, daher schützt es vor Geräte- oder Portausfall, aber nicht unbedingt vor Trassenbruch, sofern nicht divers geführt).
+Weitere L2-Mechanismen: In Providernetzen kommen teils weitere Techniken zum Einsatz: MSTP (für VLAN-separierte Bäume), MC-LAG/MLAG (Multi-Chassis LAG, bei dem zwei Switches einen gemeinsamen LAG-Terminator bilden, um auch Switch-Ausfall abzufangen), oder proprietäre Protokolle (z. B. früher Cisco SRP/DPT für FDDI/SONET-ähnliche Glasfaser-Ringe
+cisco.com
+cisco.com
+). Generell zielen alle darauf ab, Schleifen zu vermeiden und im Fehlerfall sekundenschnell oder schneller Konnektivität wiederherzustellen.
+Redundanzmechanismen auf Layer 3 (Netzwerk/Routing)
+Auf Schicht 3 wird Redundanz vor allem durch dynamische Routing-Protokolle und Failover von Gateway-Adressen umgesetzt:
+Dynamisches Routing (OSPF, IS-IS, BGP etc.): Routing-Protokolle wie OSPF (Open Shortest Path First) oder IS-IS werden innerhalb des Provider-Netzes (IGP in einem autonomen System) verwendet. Sie berechnen den besten Pfad zu jedem Zielnetz und aktualisieren die Routingtabellen automatisch bei Änderungen. Wenn ein Link oder Router ausfällt, erkennt das Routing-Protokoll dies und errechnet Alternativrouten. OSPF z. B. reagiert im Default innerhalb einiger Sekunden, kann aber mit Mechanismen wie BFD (Bidirectional Forwarding Detection) auf unter 1 Sekunde gebracht werden. Die Konvergenz von OSPF ist deutlich schneller als die von BGP
+computerweekly.com
+, da OSPF auf interne Netze optimiert ist. Moderne Core-Router unterstützen zudem ECMP (Equal-Cost Multi-Path), d. h. parallele gleichwertige Routen – so kann Verkehr im Normalfall auf mehrere Pfade verteilt werden und beim Wegfall eines Pfads verbleibt noch mindestens ein weiterer aktiv (dies reduziert Ausfallauswirkungen auf minimale Paketverluste). In Provider-Core-Netzen werden Knoten häufig so verbunden, dass mehrere OSPF-Routen existieren, was eine vermaschte Topologie mit automatischer Lastverteilung und Redundanz ergibt.
+Border Gateway Protocol (BGP): BGP ist das Routing-Protokoll zwischen autonomen Systemen (Exterior Gateway Protocol). Es ermöglicht Multi-Homing, also den Anschluss eines Netzes an mehrere externe Netze/Upstreams. Ausfall eines Internet-Uplinks wird durch BGP dadurch abgesichert, dass die Routen über den alternativen Uplink bekannt gemacht und genutzt werden. BGP reagiert standardmäßig langsamer (Haltezeit typ. 180 Sek.), kann aber ebenfalls mit kleineren Timern oder BFD beschleunigt werden. In der Praxis genügt oft eine Umschaltung in wenigen Sekunden, da BGP vor allem für großräumige Redundanz (z. B. zweiter Carrier oder zweiter Backbone-PoP) gedacht ist. Beispiel: Ein Unternehmensstandort mit zwei ISP-Anbindungen nutzt BGP – fällt die primäre Leitung weg, entfernt BGP den Pfad aus der Routing-Tabelle und leitet den Traffic über die sekundäre Leitung ins Internet
+computerweekly.com
+. Durch geschicktes Routing-Design (Lokale Präferenzen etc.) kann vorgegeben werden, welcher Pfad im Normalfall präferiert wird und welcher als Backup dient. Im Carrier-Backbone wird BGP auch intern (iBGP) genutzt, um Kundennetze zwischen Core-Routern zu verteilen; dort greifen aber meist MPLS und IGP schneller, BGP sorgt für die globale Verteilung.
+VRRP/HSRP und Gateway-Redundanz: Auf Kundenseite oder beim Übergang Access -> Aggregation wird oft das Virtual Router Redundancy Protocol (VRRP) oder ähnliche (HSRP, CARP) eingesetzt, um Redundanz des Standard-Gateways sicherzustellen. Zwei Router übernehmen eine gemeinsame virtuelle IP; fällt der aktive aus, übernimmt der Standby in Sekundenbruchteil. In FTTH-Netzen ist VRRP z. B. zwischen zwei BNGs oder Aggregations-Routern relevant, damit Kunden nicht ihren Gateway verlieren, falls ein zentrales Gateway-System ausfällt. (Deutsche Telekom setzt im BNG-Konzept z. B. oft zwei geografisch getrennte BNGs pro Region ein, die sich gegenseitig als Backup dienen – vermutlich via VRRP oder Koordination im Access.) Auch an Unternehmens-Standorten mit redundanten Router-Anschlüssen kommt VRRP zum Tragen. Obwohl vom Benutzer unbemerkt, sind solche Protokolle Teil des Redundanzdesigns.
+In modernen Carrier-Netzen wird Redundanz meist über Routing realisiert („IP-Redundanz“). Ein Trend ist, statt großer Layer-2-Domänen vermehrt auf Layer-3 zu schalten: Etwa statt Switch-Ringen mit STP eher Router-Ringe mit OSPF/BGP. MPLS-basierte Netze (z. B. Telekom, Vodafone) nutzen Fast Reroute-Mechanismen auf Label-Switchebene, die ebenfalls Umschaltzeiten <50 ms bieten können – dies jedoch auf Schicht 2.5, was hier nur am Rande erwähnt sei. Wichtig ist, dass Layer 3 Redundanzkonzepte immer mehrfache physische Pfade im Hintergrund voraussetzen, die das Routing wählen kann.
+Strukturierung: PoPs, Aggregation und Access-Netze
+Glasfasernetze großer Betreiber sind hierarchisch aufgebaut. Die folgende Tabelle gibt einen Überblick typischer Netzebenen, ihrer Aufgaben, Topologien und Komponenten in einem FTTH-Netz (vereinfacht):
+Netzebene	Aufgabe/Rolle	Typische Topologie & Redundanz	Typische Komponenten
+Kernnetz / Backbone	verbindet regionale Knoten und Transit (zentrales Backbone). Häufig auch Anbindung ans Internet und zu anderen Betreibern.	Vermaschtes Netz oder große Ringe zwischen Core-PoPs. Mehrfache Glasfaser-Trassen, voll redundante Routen zwischen Kernknoten.	Core-Router (IPv4/IPv6, MPLS), DWDM-Systeme (ROADM), OTN-Multiplexer, Backbone-Switches.
+Aggregationsnetz / PoP-Ebene	sammelt Traffic aus lokalen Access-Netzen und verbindet sie mit dem Kernnetz. PoPs (Points of Presence) in Regionen oder Städten beherbergen Aggregations-Switches/Router und OLTs.	Oft Ring-Topologie auf Metro-Ebene: Mehrere PoPs in einer Region über Glasfaserring verbunden (automatische Schutzumschaltung)
+tarif4you.de
+. Alternativ Dual-Homing: jeder PoP mit zwei getrennten Backbone-Nodes verbunden. Redundante Aggregationsgeräte pro Standort üblich.	Aggregation-Switches oder -Router, ggf. BNGs (Broadband Network Gateways), OLTs (Optical Line Terminals) für PON, Metro-Ethernet-Nodes.
+Zugangsnetz / Access	letzte Meile zum Endkunden (FTTH). Verteilung vom PoP zu einzelnen Haushalten/Gebäuden.	Stern-/Baum-Topologie: Vom PoP bzw. einer Kabelverzweiger-Station führen Fasern zu jedem Anschluss. Meist ohne Redundanz bis zum Endkunden (ein Anschlusspunkt pro Haus). Allerdings oft doppelte Fasern im Kabel pro Kunde als Reserve. Die Anschlusspunkte (z. B. Street Cabinets) können wiederum ringförmig an den PoP angebunden sein für Ausfallsicherheit der Bereiche.	PON-Splitter in Muffen, Hausanschluss-Dosen (ONT/ONU beim Endkunden), aktiver Ethernet-Switch in KVz (bei PtP-Ethernet), Glasfaser-Abschlussgehäuse. In PoPs: OLTs für GPON/XGS-PON oder Ethernet-Linecards.
+Erläuterung: Ein PoP (Point of Presence) ist ein Netzknoten, oft in einer Technikzentrale oder einem Street Cabinet, an dem Fasern aus dem Access zusammenlaufen und aktiv geschaltet werden. Größere PoPs dienen zugleich als Aggregationsknoten Richtung Backbone. Beispielsweise betreibt Deutsche Glasfaser in ländlichen Regionen zahlreiche PoPs (i.d.R. Container oder kleine Technikgebäude), die per Glasfaser mit zentraleren Knoten verbunden sind. Diese Anbindungen erfolgen redundant: entweder als Ring, der mehrere PoPs verbindet, oder als A/B-Leitung zu zwei verschiedenen Core-Standorten. In Backbone/Kernnetzen (Telekom spricht z. B. von Kern-PoPs) werden meist große Router in mindestens zwei zentralen Rechenzentren pro Region installiert, verbunden durch mehrere Fasern. Diese Core-PoPs sind oft vermascht (z. B. jeder Core-PoP mit mehreren anderen). Über diese Struktur werden nationale und internationale Daten geleitet. Im Aggregationsnetz darunter sind häufig Metro-Ringe im Einsatz: Beispielsweise verbindet ein städtischer Glasfaserring die wichtigen Knoten in der Stadt (Hauptverteiler, größere PoPs). So ein Metro-Core-Ring kann aus 4–10 oder mehr Stationen bestehen, inkl. Übergängen ins Backbone. Fällt innerorts eine Faser aus (z. B. Baggerbiss), übernimmt der Ring sofort den Datenverkehr über die Gegenrichtung. NetCologne etwa betreibt in Köln Ringsysteme, um Stadtteile redundant anzubinden (die Grundidee eines Glasfaserrings besteht darin, die Ausfallsicherheit zu erhöhen – Ausfall eines Abschnitts beeinträchtigt nicht die Erreichbarkeit der Standorte)
+de.linkedin.com
+. Zugangsnetze (Access) sind aus wirtschaftlichen Gründen meist nicht doppelt geführt – ein Haushalt wird idR über einen Weg angeschlossen. Allerdings kann innerhalb eines Wohngebiets der Betreiber zwei Wege in verschiedene PoPs vorsehen (seltener), oder benachbarte Straßenverteiler vermaschen. Die Hauptsicherung findet hier eher auf höherer Ebene statt: z. B. falls ein OLT-Gerät ausfällt, wird Kunden eventuell temporär über ein benachbartes OLT versorgt (dynamische Umschaltung kommt hier aber an Grenzen, da PON-Splitter fix sind – daher werden OLTs meist selbst redundant bestückt). Viele FTTH-Betreiber dimensionieren ihre Access-PoPs mit Backup-Stromversorgung (USV, Generator) und mindestens doppelten Uplink-Ports, damit ein Geräte- oder Portausfall nicht alle Anschlüsse isoliert.
+Ringstrukturen mit automatischer Schutzumschaltung (Metro/Core-Ringe)
+Die Verwendung redundanter Glasfaser-Ringe ist in städtischen und regionalen Netzen verbreitet, um hohe Verfügbarkeit zu gewährleisten. Ein Ring verbindet typischerweise mehrere zentrale Knoten (z. B. städtische Verteiler, regionale PoPs) kreisförmig, sodass ein geschlossener Loop entsteht. Der große Vorteil ist die eingebaute Single-Failure-Toleranz: Bei einem Faserbruch auf einer Ringstrecke wird der Datenverkehr automatisch in die andere Richtung geleitet. Dieses Prinzip der selbstheilenden Ringe entstammt klassischen Telekomnetzen (SDH/SONET mit 1+1 oder 1:1 MSP – Multiplex Section Protection). Damals garantierte der Ring eine Umschaltzeit unter 50 ms, wodurch Dienste wie Telefonie unterbrechungsfrei blieben. Heutzutage werden Glasfaser-Ringe meist auf Ethernet/IP-Ebene betrieben. Die automatische Schutzumschaltung wird durch Protokolle wie oben beschrieben (ERPS G.8032 auf L2 oder OSPF auf L3) realisiert. Beispielsweise kann ein Metro-Ethernet-Ring mit ERPS einen Faserbruch in etwa 50 Millisekunden ausregeln, indem ein zuvor blockierter Port freigegeben wird
+alliedtelesis.com
+. In IP-Ring-Topologien mit Routing übernimmt das Routingprotokoll die Umschaltung: Fällt ein Link aus, erkennen die Router den Verlust und senden den Traffic über den intakten Teil des Rings. In beiden Fällen bleibt die Konnektivität zwischen allen Knoten des Rings bestehen – kein Standort ist isoliert. Metro-Ring-Beispiel: Tele Columbus (Marke PŸUR) hat 2021/2022 mehrere Glasfaser-Metro-Ringe in deutschen Bundesländern aufgebaut, oft in Kooperation mit der Deutschen Bahn (DB broadband). So wurde ein 925 km langer Baden-Württemberg-Ring vereinbart, der Orte wie Heidelberg, Karlsruhe, Rheinfelden u. a. verbindet
+tarif4you.de
+tarif4you.de
+. Dieses Ringsystem nutzt vorhandene DB-Glasfasern und ermöglicht Tele Columbus, regionale Netze redundant anzubinden. Laut Mitteilung gewährleistet der neue Ring durch redundante Anbindung eine Netzverfügbarkeit auf höchstem Niveau und schafft zentrale Ankopplung für wachsende Bandbreiten
+tarif4you.de
+. Ähnliche Projekte liefen in Thüringen und Mecklenburg-Vorpommern, was zeigt, dass Ring-Konzepte auch über größere geografische Bereiche zur Ausfallsicherheit eingesetzt werden. Im Backbone (Core-Netz) der Telekom sind traditionell ebenfalls Ringstrukturen genutzt worden – früher SDH-Dualringe zwischen Knoten, heute oft überlagert durch ein vermaschtes IP-MPLS-Netz. Aber auch Telekom setzt in Metro-/Zugangsbereichen Ringe ein: z. B. OPAL-Ringe in FTTC-Zeiten (VDSL) oder jetzt in FTTH das Konzept, mehrere zentrale Verteiler über Ring zu koppeln. NetCologne betreibt einen städtischen Glasfaser-Backbone mit Ringen in Köln und Umland, um jeden Stadtteil über zwei Wege zu erreichen (lokale Redundanz nützt allerdings wenig, wenn ein Core-Router ausfällt – daher gehören Endpunkte ebenfalls redundant ausgeführt)
+x.com
+. Technisch werden Ringe entweder rein auf L2 (mit ERPS/MSTP) oder auf L3 (IP-Routing) umgesetzt, oder sogar auf optischer Ebene: DWDM-Systeme können Ring-Topologien mit optischem Schutzschalten verwenden. Beispielsweise lassen sich zwei gegenläufige Wellenlängenpfade einrichten (East/West), von denen einer standby ist – ein Optik-Switch am Knoten wählt das Signal des intakten Pfades im Fehlerfall (ähnlich MSP bei SDH). Große Betreiber modernisieren ihre optischen Netze mit ROADM-Technologie, die flexible Ring-/Mesh-Strukturen erlaubt. Deutsche Glasfaser z. B. hat 2023 begonnen, ihr Transportnetz mit neuen DWDM-Systemen (Ekinops360) auszustatten, inklusive “colorless, gridless ROADM”-Architektur auf allen Ebenen (Core, Aggregation, lokale Technikstandorte)
+ekinops.com
+. Damit können Ringsignale dynamisch geschaltet werden. Dennoch wird meist das IP-Overlay entscheiden, wohin Traffic geht – die Optik stellt nur sicher, dass mindestens ein Pfad physisch verfügbar ist.
+Praktische Umsetzung bei Deutsche Glasfaser, Telekom, NetCologne
+Deutsche Glasfaser (DG): Als einer der größten alternativen FTTH-Anbieter (v. a. im ländlichen Raum) hat DG eine klare Architektur: In den Ausbaugebieten stehen lokale PoP-Container, von denen Fasern in die Haushalte führen (meist XGS-PON-Technik seit 2024
+nokia.com
+). Diese PoPs werden dann an das zentrale Backbone von DG angeschlossen. Für die Backbone-Anbindung kooperiert DG mit GasLINE (einem überregionalen Glasfaser-Backbone)
+glasfaserforum.de
+. Die Redundanz-Strategie von DG folgt dem Motto „Ring statt doppelter Anfangstrasse“: Neue Gebiete werden in Schleifen aneinandergereiht, und erst wenn ein Ring geschlossen ist, haben die Orte zwei Einspeisungswege
+glasfaserforum.de
+. So entsteht nach und nach ein vermashctes Regionalnetz. DG selbst bestätigt, dass das Backbone (Kernnetz) sicher bereits redundant ausgelegt ist
+glasfaserforum.de
+ – d.h. die Hauptknoten (z. B. ihre zentralen Routerstandorte) sind auf unterschiedlichen Wegen verbunden. Auf lokaler Ebene gab es allerdings Ausfälle in der Vergangenheit, weil noch kein Ringschluss vorhanden war (ein Beispiel 2021: eine durch Tiefbau beschädigte DG-Backbone-Leitung im Raum NRW legte mehrere Gemeinden lahm, bis repariert wurde
+glasfaserforum.de
+glasfaserforum.de
+). DG lernt und investiert hier laufend: Sobald neue Nachbargebiete ausgebaut sind, wird eine zweite Route geschaffen. In Bundesländern wie Brandenburg oder Nordrhein-Westfalen bildet DG inzwischen große Ringsysteme, um Kommunen redundant anzuschließen – oft in Zusammenarbeit mit kommunalen Partnern. Außerdem hat DG die Core-Technik modernisiert: Mit Ekinops wurde ein einheitliches optisches Transportnetz implementiert, das alle Netzebenen (Core, Aggregation, Central Office) abdeckt
+ekinops.com
+. Dadurch kann DG effizienter für Redundanz sorgen, etwa durch “alien wavelength”-Services zur temporären Routenführung im Fehlerfall
+ekinops.com
+. Insgesamt folgt DG modernen Open-Access-Standards: Sie betreiben ein offenes Netz, das auch anderen Anbietern (z. B. Vodafone, 1&1) per Bitstrom zur Verfügung steht. Redundanz kommt dabei auch dem Wholesale-Partner zugute. DGs Netz ist damit ein Beispiel für FTTH mit ringförmiger Backbone-/Aggregationsstruktur und zunehmender Meshing im Wachstum – ein pragmatischer Ansatz, der Ausfallsicherheit verbessert, sobald genügend Knoten vorhanden sind. Deutsche Telekom: Als Ex-Monopolist hat die Telekom ein landesweites Netz mit mehreren Ebenen. Ihre klassische Topologie kann vereinfacht so beschrieben werden: Hauptknoten (Core-Nodes) in ganz Deutschland (z. B. Frankfurt, Berlin, Hamburg, München etc.) sind vermascht und durch ein MPLS/IP-Kernnetz verbunden. Darunter liegen Regionale Knoten (früher HVt, jetzt oft BNG-Standorte), die jeweils mehrere lokale Vermittlungsstellen/PoPs aggregieren. In den Städten und auf dem Land verbindet die Telekom die ehemaligen Vermittlungsstellen typischerweise in Ringstrukturen. Schon in der Telefon-Ära gab es sogenannte OPAL-Ringe oder SDH-Ringe, um Ortsnetze redundant an die übergeordneten Knoten anzubinden. Heute im Glasfaser-Zeitalter führt die Telekom ähnliche Prinzipien fort: Jede neue Technikzentrale (z. B. ein Outdoor-MSAN oder OLT) wird möglichst dual angebunden, entweder über zwei verschiedene Aggregationsknoten oder in einen Ring mit Nachbarstandorten. So soll kein Verteiler “am seidenen Faden” hängen. Ein praktisches Beispiel: Bei den BNG (Broadband Network Gateway)-Einführungen wurden Regionen so aufgeteilt, dass immer zwei BNG-Knoten ein Versorgungsgebiet bedienen – fällt einer aus, übernimmt der andere (mithilfe von Redundanzprotokollen und ausreichend Transportkapazität)
+bundesnetzagentur.de
+rtbrick.com
+. Auch die Glasfaserzuführung von Mobilfunkstationen (FTTS) realisiert Telekom häufig über Ring oder Stern mit Alternativpfad, um Mobilfunkausfälle durch Glasfaserschnitte zu minimieren. Generell hält die Telekom strenge SLAs ein, was ohne Redundanz nicht möglich wäre. Allerdings sind auch bei der Telekom nicht alle Netze vollständig redundant – z. B. letzte Meile zum Kunden meist nicht, und es gab bekannte Vorfälle (etwa der Lufthansa-Ausfall 2023, als bei Bauarbeiten beide Glasfasern einer vermeintlich divers geführten Strecke zerstört wurden, was aufzeigt, dass echte Trassenredundanz schwierig sein kann, wenn Bündel nahe beieinander liegen
+reddit.com
+). Insgesamt gilt Telekom als Benchmark für Redundanz-Standards in Deutschland: Kabel doppel geführt, Knoten doppelt besetzt, USV/Notstrom überall, und Kernrouter in geografisch redundanten Rechenzentren. NetCologne: Der Kölner Stadtnetzbetreiber betreibt ein regionales Glasfasernetz in Köln/Bonn und Umgebung. NetCologne setzt stark auf Kooperation (z. B. mit Energieversorgern oder nun mit Deutsche Glasfaser für Open Access) und auf Ringstrukturen in der Metro-Ebene. Ein bekanntes Konzept ist der KölnRing, der wichtige Knotenpunkte in Köln verbindet. Zudem bestehen Ringe bzw. duale Zuführungen in den Kreisen um Köln (Rhein-Erft, Rhein-Berg, Aachen-Region) – oft durch Faserpachten bei Partnern. Die Grundidee eines Glasfaserrings wird auch von NetCologne propagiert: Ausfallsicherheit, damit beim Faserausfall an einer Stelle andere Knoten weiterhin von der anderen Seite versorgt werden
+de.linkedin.com
+. Für Unternehmen in Köln bietet NetCologne z. B. Carrier-Ethernet mit zwei PoP-Anschlüssen (auf Nachfrage), um Standortvernetzungen redundant zu gestalten. Technisch nutzt NetCologne Metro-Ethernet-Switches (teils Cisco, Nokia) mit ERPS in städtischen Ringen und fährt ein IP/MPLS-Core für überregionale Verbindungen (z. B. zum DE-CIX). Die Redundanzpraktiken ähneln denen größerer Carrier im Kleinen: Rechenzentrum in Köln und eins in der Region mit redundanter Kopplung, städtische Verteiler doppelt angebunden, aktive Komponenten (Router, Switches) redundant ausgelegt. Durch die regionale Fokussierung sind die Ringe kürzer, was schnelles Umschalten erleichtert. Ein spezielles Beispiel ist NetColognes Engagement bei der InfraLoop: einem Ringschluss um Köln in Kooperation mit Energieversorgern, um Dark Fiber Ringe kommerziell bereitzustellen. Solche Initiativen zeigen, dass Ring-Topologien als Best Practice gelten – BREKO und BUGLAS (Branchenverbände) verweisen regelmäßig auf Glasfaserringe bei City-Carriern als Mittel zu höherer Resilienz.
+Fazit
+Deutsche Glasfasernetze kombinieren heute physische Redundanz (geografisch verteilte Faserrouten) und logische Mechanismen (Protokolle auf Layer 2/3), um eine maximale Verfügbarkeit zu erreichen. Ring-Topologien spielen dabei eine zentrale Rolle – von Metro-Ringen in Städten, die bei Ausfall in Millisekunden Schutzumschaltung bieten
+tarif4you.de
+, bis hin zu Backbone-Ringen über ganze Bundesländer
+tarif4you.de
+. Typische Redundanzprotokolle wie RSTP (reduziert Ausfallzeiten auf <1 Sekunde)
+de.wikipedia.org
+, ERPS (~50 ms Failover)
+alliedtelesis.com
+, LAG/LACP (nahtloser Link-Ersatz) und OSPF/BGP (dynamisches Routing für schnelle Umschaltung) sorgen dafür, dass die physischen Backup-Pfade auch sofort genutzt werden. Netzbetreiber wie Deutsche Glasfaser setzen vermehrt auf hierarchische Ringsysteme und bauen Redundanz iterativ aus – jedes neue Ausbaugebiet erhöht die Vermaschung des Netzes
+glasfaserforum.de
+. Die Deutsche Telekom als Referenz hat ein nahezu voll redundantes Kernnetz und ringförmige Zubringer, während NetCologne und andere Stadtnetzbetreiber auf kompakte Glasfaserringe zur lokalen Absicherung setzen. Insgesamt folgen die Praktiken dem Grundsatz: Keine einzelne Komponente darf ein “Single Point of Failure” sein. Durch Redundanz in physischer Kabelinfrastruktur, Netzdesign (Topologie) und Protokollsteuerung werden Glasfasernetze in Deutschland robust gegenüber Störungen gemacht – ein essenzielles Merkmal angesichts der Abhängigkeit von zuverlässigem Breitband in Wirtschaft und Gesellschaft. Quellen: Die Darstellung stützt sich auf Branchenberichte, Forumseinträge aus der Netzbetreiber-Praxis und Mitteilungen der Carrier. Beispiele wie der Tele Columbus Glasfaserring
+tarif4you.de
+tarif4you.de
+ oder Aussagen zur DG-Netzplanung
+glasfaserforum.de
+glasfaserforum.de
+ illustrieren real umgesetzte Redundanzkonzepte. Technische Details zu Protokollen sind durch Standards und Literatur untermauert (z. B. Wikipedia zu RSTP
+de.wikipedia.org
+, Allied Telesis zu ERPS
+alliedtelesis.com
+). Diese Kombination von praktischen und technischen Quellen zeigt ein umfassendes Bild aktueller Redundanz-Topologien in deutschen Glasfasernetzen.
+
+Favicon
+Favicon
+Favicon
+Favicon
+Favicon
+Sources
+
+
+
+Keine ausgewähltKeine ausgewählt
+ChatGPT can make mistakes. Check important info. See Cookie Preferences.
+
+Glasfaser-Redundanz und Ring-Topologien in Deutschland
+Einleitung
+Glasfasernetze bilden das Rückgrat moderner Kommunikationsinfrastrukturen. Angesichts steigender Anforderungen an Verfügbarkeit und Ausfallsicherheit planen Netzbetreiber ihre Netze mit hoher Redundanz. Dabei kommen sowohl physikalische Maßnahmen (z. B. doppelte Leitungswege) als auch logische Mechanismen (Protokolle für automatisches Failover) zum Einsatz. Dieser Bericht untersucht die logische und topologische Umsetzung von “Fiber Route Redundancy” und “Redundant Ring Topology” in deutschen Glasfasernetzen – mit Schwerpunkt auf dem Anbieter Deutsche Glasfaser – und vergleicht übliche Topologien, Redundanzmechanismen sowie Best Practices von Netzbetreibern (z. B. Deutsche Glasfaser, Deutsche Telekom, NetCologne).
+Netz-Topologien mit Fokus auf Redundanz
+Glasfasernetze lassen sich logisch in verschiedene Topologien einteilen, von denen Punkt-zu-Punkt, Ring und Mesh besonders relevant sind. Im Hinblick auf Redundanz bieten diese unterschiedliche Vorteile:
+Punkt-zu-Punkt-Verbindungen: Hierbei sind zwei Knoten direkt verbunden. Diese Topologie ist einfach, aber allein nicht ausfallsicher – ein einzelner Faserschaden kappt die Verbindung komplett. Redundanz lässt sich nur durch mehrfache Punkt-zu-Punkt-Leitungen erreichen (z. B. zwei geografisch getrennte Fasern zwischen denselben Standorten). So bauen Betreiber oft zwei physisch getrennte Glasfasertrassen zwischen wichtigen Knoten, um Ausfälle einer Route aufzufangen (Streckenredundanz).
+Ring-Topologie: Mehrere Knoten sind in einem geschlossenen Ring verbunden, sodass jeder Standort zwei Wege in entgegengesetzter Richtung hat. Diese Ring-Struktur erhöht die Ausfallsicherheit signifikant: Wenn ein Kabel unterbrochen oder ein Knoten im Ring ausfällt, bleiben alle anderen Knoten über die Gegenrichtung erreichbar
+de.linkedin.com
+. Die Daten können den alternativen Pfad nehmen, wodurch ein einzelner Fehler toleriert wird
+cisco.com
+tarif4you.de
+. Dies sorgt für hohe Netzverfügbarkeit; z. B. gewährleistet ein Glasfaserring dank redundanter Anbindung Netzverfügbarkeit auf höchstem Niveau
+tarif4you.de
+.
+Mesh-Topologie (vermaschtes Netz): Jeder Knoten kann mit mehreren anderen verbunden sein, es gibt also mehrfache Pfade durch das Netz. Ein voll vermaschtes Backbone bietet die größte Redundanz, da bei Ausfall eines Links zahlreiche alternative Routen existieren. Allerdings steigt die Komplexität der Steuerung (Routing) mit der Anzahl der Verbindungen. Praktisch werden oft Teilmesh-Topologien verwendet, z. B. Kernnetze, in denen zentrale Knoten mehrfach untereinander verbunden sind (häufig in Kombination mit Ringstrukturen auf tieferen Ebenen). Eine Multi-Ring-Topologie ist ebenfalls gebräuchlich, wobei mehrere Ringe hierarchisch oder miteinander verbunden sind, um Redundanzen sicherzustellen
+bundesnetzagentur.de
+.
+Zusammenfassend gilt: Punkt-zu-Punkt-Netze benötigen duplizierte Leitungen zur Redundanz, Ringnetze bieten eingebauten Schutz gegen einen Ausfall, und Mesh-Netze bieten höchste, aber komplexe Redundanz. Netzbetreiber wählen oft eine Mischung – z. B. regionale Ringe im Access/Metro-Bereich und vermaschte Verbindungen im Core-Bereich – um eine Balance aus Zuverlässigkeit und Kosten zu erreichen
+glasfaserforum.de
+.
+Physikalische vs. logische Redundanz
+Physikalische Redundanz bezieht sich auf doppelte oder vielfältige Infrastrukturpfade. Beispiele sind zwei unabhängige Glasfaserkabel auf unterschiedlichen Trassen (Trassenredundanz) oder ringförmig verlegte Kabel, die einen zweiten physischen Weg bieten. In deutschen Netzen ist es üblich, für wichtige Routen zwei geographisch getrennte Trassen vorzusehen, sofern wirtschaftlich vertretbar. Allerdings wird bei neuen FTTH-Ausbaugebieten anfangs oft nur eine Hauptleitung verlegt; die zweite entsteht erst, wenn weitere Ausbaugebiete angeschlossen werden
+glasfaserforum.de
+. So berichtet ein Forumbeitrag über Deutsche Glasfaser: “Die Deutsche Glasfaser plant Redundanz ein, aber die Trassen dafür entstehen erst mit der Erschließung neuer Ausbaugebiete. Da werden also nicht zwei unabhängige Leitungen [...] gezogen, sondern Ausbaugebiete wie in einer Schleife aneinandergereiht, so dass nach dem Ringschluss jeder Ort von zwei Seiten erreichbar ist”
+glasfaserforum.de
+. Hier wird physische Redundanz also schrittweise durch Ringschlüsse erreicht, anstatt von Anfang an doppelte Kabel zu verlegen. Logische Redundanz bedeutet, dass Netzkomponenten und -protokolle so konfiguriert sind, dass im Fehlerfall automatisch umgeschaltet wird. Sie setzt oft physische Vielfalt voraus (mindestens zwei Verbindungswege), kümmert sich aber um automatisches Failover. Beispiele: Ein Switch besitzt zwei Uplink-Ports zu verschiedenen Verteilern; im Normalbetrieb ist einer inaktiv (oder beide aktiv im LAG), und bei Ausfall eines Pfads übernimmt der andere ohne manuelles Eingreifen. Logische Redundanz wird durch Netzprotokolle und Mechanismen auf verschiedenen OSI-Schichten umgesetzt (z. B. Spanning Tree auf Schicht 2 oder OSPF auf Schicht 3, siehe unten). Fazit: Physikalische Redundanz schafft die Grundlage (mehrere Kabel/Wege), während logische Redundanz mittels Protokollen dafür sorgt, dass diese Wege im Betrieb nutzbar bleiben und automatisch gewechselt wird, falls einer wegfällt. Optimalerweise ergänzen sich beide: z. B. zwei physisch getrennte Faserringe, die logisch so gesteuert sind, dass ein Ausfall unbemerkt für die Nutzer bleibt.
+Redundanzmechanismen auf Layer 2 (Data Link)
+In Layer-2-Netzen (Ethernet) gibt es klassische Mechanismen, um Schleifen zu vermeiden und Redundanzpfade bereitzustellen:
+Spanning Tree Protocol (STP) und Varianten: STP (IEEE 802.1D) ist ein älteres Protokoll, das Netzwerktopologien mit Schleifen in einen Baum umwandelt, indem redundante Links temporär blockiert werden. Fällt die primäre Verbindung aus, aktiviert STP den zuvor blockierten Pfad, um die Verbindung wiederherzustellen. Der klassische STP-Algorithmus benötigt jedoch relativ lange Umschaltzeiten – in Standardkonfiguration bis zu ~50 Sekunden, um eine neue Topologie zu berechnen
+de.wikipedia.org
+de.wikipedia.org
+. Verbesserte Versionen wie Rapid Spanning Tree (RSTP, IEEE 802.1w) reduzieren die Ausfallzeit erheblich: RSTP schafft eine Rekonvergenz in unter 1 Sekunde
+de.wikipedia.org
+, indem es schneller auf Änderungen reagiert (u. a. mit verkürzten Timern und direkter Absprache zwischen Switches). Moderne Multiple Spanning Tree Protocol (MSTP, IEEE 802.1s) ermöglicht zudem mehrere gleichzeitige Bäume (z. B. je VLAN) zur besseren Ausnutzung redundanter Links. Dennoch wird STP/RSTP in Provider-Netzen heute seltener auf Kernstrecken eingesetzt, da neuere Verfahren effizienter sind.
+Ethernet Ring Protection Switching (ERPS, ITU-T G.8032): Speziell für Ring-Topologien in Ethernet wurde ERPS standardisiert. Ähnlich dem Konzept der automatischen Schutzumschaltung aus SDH/SONET-Netzen bietet ERPS sehr schnelle Failover-Zeiten (nahe 50 ms)
+alliedtelesis.com
+. Im Ring wird ein Link (die Ring Protection Link, RPL) im Normalfall blockiert, um keine Schleife zu erzeugen. Wird ein Faserbruch an einer anderen Stelle detektiert, schaltet das Protokoll den geschützten Link innerhalb von ca. 50 Millisekunden frei, sodass der Datenverkehr nahtlos über die andere Richtung weiterlaufen kann
+alliedtelesis.com
+. Diese Reaktionszeit ähnelt der aus klassischen SDH-Ringen (Ziel: <50 ms). Möglich wird dies durch schnelle Link-Überwachung (z. B. kontinuierliche OAM-Heartbeat-Pakete im ~3,3 ms Intervall) und koordinierte Sperr-/Freigabe-Mechanismen im Ring
+documentation.nokia.com
+documentation.nokia.com
+. Viele Carrier in Metro-Netzen nutzen ERPS anstelle von STP, da es deterministisches und schnelleres Failover auf Layer 2 ermöglicht. (Anmerkung: Hersteller bewerben mit proprietären Ring-Protokollen teils noch geringere Umschaltzeiten von <30 ms
+black-box.de
+, doch in der Praxis hängt dies von Hardware und Parametern ab; 50 ms gilt als bewährter Standardwert.)
+Link Aggregation (LAG) / LACP: Bei der Link Aggregation (IEEE 802.3ad/802.1AX) werden zwei oder mehr physische Verbindungen zu einer logischen gebündelt. Aus Sicht höherer Protokolle existiert nur ein “dickerer” Link. Fällt eine der physischen Leitungen aus, übernehmen die verbleibenden automatisch dessen Traffic (ggf. mit reduzierter Gesamtbandbreite). Die Umschaltung passiert auf Hardwareebene praktisch verzögerungsfrei. LAG bietet also Frame-basierte Verteilung und Redundanz zugleich. Typische Anwendung: Uplink-Bündel zwischen Switches oder von Access-Switch zu Aggregation-Switch, um sowohl höhere Kapazität als auch Ausfallsicherheit zu erzielen. Das LACP-Protokoll sorgt dafür, dass nur aktive Links im Bündel genutzt werden und erkennt ausgefallene Leitungen sofort, sodass ein Failover im Bereich weniger Millisekunden erfolgt. Wichtig: LAG setzt parallele physische Pfade voraus (oft im selben Kabeltrasse, daher schützt es vor Geräte- oder Portausfall, aber nicht unbedingt vor Trassenbruch, sofern nicht divers geführt).
+Weitere L2-Mechanismen: In Providernetzen kommen teils weitere Techniken zum Einsatz: MSTP (für VLAN-separierte Bäume), MC-LAG/MLAG (Multi-Chassis LAG, bei dem zwei Switches einen gemeinsamen LAG-Terminator bilden, um auch Switch-Ausfall abzufangen), oder proprietäre Protokolle (z. B. früher Cisco SRP/DPT für FDDI/SONET-ähnliche Glasfaser-Ringe
+cisco.com
+cisco.com
+). Generell zielen alle darauf ab, Schleifen zu vermeiden und im Fehlerfall sekundenschnell oder schneller Konnektivität wiederherzustellen.
+Redundanzmechanismen auf Layer 3 (Netzwerk/Routing)
+Auf Schicht 3 wird Redundanz vor allem durch dynamische Routing-Protokolle und Failover von Gateway-Adressen umgesetzt:
+Dynamisches Routing (OSPF, IS-IS, BGP etc.): Routing-Protokolle wie OSPF (Open Shortest Path First) oder IS-IS werden innerhalb des Provider-Netzes (IGP in einem autonomen System) verwendet. Sie berechnen den besten Pfad zu jedem Zielnetz und aktualisieren die Routingtabellen automatisch bei Änderungen. Wenn ein Link oder Router ausfällt, erkennt das Routing-Protokoll dies und errechnet Alternativrouten. OSPF z. B. reagiert im Default innerhalb einiger Sekunden, kann aber mit Mechanismen wie BFD (Bidirectional Forwarding Detection) auf unter 1 Sekunde gebracht werden. Die Konvergenz von OSPF ist deutlich schneller als die von BGP
+computerweekly.com
+, da OSPF auf interne Netze optimiert ist. Moderne Core-Router unterstützen zudem ECMP (Equal-Cost Multi-Path), d. h. parallele gleichwertige Routen – so kann Verkehr im Normalfall auf mehrere Pfade verteilt werden und beim Wegfall eines Pfads verbleibt noch mindestens ein weiterer aktiv (dies reduziert Ausfallauswirkungen auf minimale Paketverluste). In Provider-Core-Netzen werden Knoten häufig so verbunden, dass mehrere OSPF-Routen existieren, was eine vermaschte Topologie mit automatischer Lastverteilung und Redundanz ergibt.
+Border Gateway Protocol (BGP): BGP ist das Routing-Protokoll zwischen autonomen Systemen (Exterior Gateway Protocol). Es ermöglicht Multi-Homing, also den Anschluss eines Netzes an mehrere externe Netze/Upstreams. Ausfall eines Internet-Uplinks wird durch BGP dadurch abgesichert, dass die Routen über den alternativen Uplink bekannt gemacht und genutzt werden. BGP reagiert standardmäßig langsamer (Haltezeit typ. 180 Sek.), kann aber ebenfalls mit kleineren Timern oder BFD beschleunigt werden. In der Praxis genügt oft eine Umschaltung in wenigen Sekunden, da BGP vor allem für großräumige Redundanz (z. B. zweiter Carrier oder zweiter Backbone-PoP) gedacht ist. Beispiel: Ein Unternehmensstandort mit zwei ISP-Anbindungen nutzt BGP – fällt die primäre Leitung weg, entfernt BGP den Pfad aus der Routing-Tabelle und leitet den Traffic über die sekundäre Leitung ins Internet
+computerweekly.com
+. Durch geschicktes Routing-Design (Lokale Präferenzen etc.) kann vorgegeben werden, welcher Pfad im Normalfall präferiert wird und welcher als Backup dient. Im Carrier-Backbone wird BGP auch intern (iBGP) genutzt, um Kundennetze zwischen Core-Routern zu verteilen; dort greifen aber meist MPLS und IGP schneller, BGP sorgt für die globale Verteilung.
+VRRP/HSRP und Gateway-Redundanz: Auf Kundenseite oder beim Übergang Access -> Aggregation wird oft das Virtual Router Redundancy Protocol (VRRP) oder ähnliche (HSRP, CARP) eingesetzt, um Redundanz des Standard-Gateways sicherzustellen. Zwei Router übernehmen eine gemeinsame virtuelle IP; fällt der aktive aus, übernimmt der Standby in Sekundenbruchteil. In FTTH-Netzen ist VRRP z. B. zwischen zwei BNGs oder Aggregations-Routern relevant, damit Kunden nicht ihren Gateway verlieren, falls ein zentrales Gateway-System ausfällt. (Deutsche Telekom setzt im BNG-Konzept z. B. oft zwei geografisch getrennte BNGs pro Region ein, die sich gegenseitig als Backup dienen – vermutlich via VRRP oder Koordination im Access.) Auch an Unternehmens-Standorten mit redundanten Router-Anschlüssen kommt VRRP zum Tragen. Obwohl vom Benutzer unbemerkt, sind solche Protokolle Teil des Redundanzdesigns.
+In modernen Carrier-Netzen wird Redundanz meist über Routing realisiert („IP-Redundanz“). Ein Trend ist, statt großer Layer-2-Domänen vermehrt auf Layer-3 zu schalten: Etwa statt Switch-Ringen mit STP eher Router-Ringe mit OSPF/BGP. MPLS-basierte Netze (z. B. Telekom, Vodafone) nutzen Fast Reroute-Mechanismen auf Label-Switchebene, die ebenfalls Umschaltzeiten <50 ms bieten können – dies jedoch auf Schicht 2.5, was hier nur am Rande erwähnt sei. Wichtig ist, dass Layer 3 Redundanzkonzepte immer mehrfache physische Pfade im Hintergrund voraussetzen, die das Routing wählen kann.
+Strukturierung: PoPs, Aggregation und Access-Netze
+Glasfasernetze großer Betreiber sind hierarchisch aufgebaut. Die folgende Tabelle gibt einen Überblick typischer Netzebenen, ihrer Aufgaben, Topologien und Komponenten in einem FTTH-Netz (vereinfacht):
+Netzebene	Aufgabe/Rolle	Typische Topologie & Redundanz	Typische Komponenten
+Kernnetz / Backbone	verbindet regionale Knoten und Transit (zentrales Backbone). Häufig auch Anbindung ans Internet und zu anderen Betreibern.	Vermaschtes Netz oder große Ringe zwischen Core-PoPs. Mehrfache Glasfaser-Trassen, voll redundante Routen zwischen Kernknoten.	Core-Router (IPv4/IPv6, MPLS), DWDM-Systeme (ROADM), OTN-Multiplexer, Backbone-Switches.
+Aggregationsnetz / PoP-Ebene	sammelt Traffic aus lokalen Access-Netzen und verbindet sie mit dem Kernnetz. PoPs (Points of Presence) in Regionen oder Städten beherbergen Aggregations-Switches/Router und OLTs.	Oft Ring-Topologie auf Metro-Ebene: Mehrere PoPs in einer Region über Glasfaserring verbunden (automatische Schutzumschaltung)
+tarif4you.de
+. Alternativ Dual-Homing: jeder PoP mit zwei getrennten Backbone-Nodes verbunden. Redundante Aggregationsgeräte pro Standort üblich.	Aggregation-Switches oder -Router, ggf. BNGs (Broadband Network Gateways), OLTs (Optical Line Terminals) für PON, Metro-Ethernet-Nodes.
+Zugangsnetz / Access	letzte Meile zum Endkunden (FTTH). Verteilung vom PoP zu einzelnen Haushalten/Gebäuden.	Stern-/Baum-Topologie: Vom PoP bzw. einer Kabelverzweiger-Station führen Fasern zu jedem Anschluss. Meist ohne Redundanz bis zum Endkunden (ein Anschlusspunkt pro Haus). Allerdings oft doppelte Fasern im Kabel pro Kunde als Reserve. Die Anschlusspunkte (z. B. Street Cabinets) können wiederum ringförmig an den PoP angebunden sein für Ausfallsicherheit der Bereiche.	PON-Splitter in Muffen, Hausanschluss-Dosen (ONT/ONU beim Endkunden), aktiver Ethernet-Switch in KVz (bei PtP-Ethernet), Glasfaser-Abschlussgehäuse. In PoPs: OLTs für GPON/XGS-PON oder Ethernet-Linecards.
+Erläuterung: Ein PoP (Point of Presence) ist ein Netzknoten, oft in einer Technikzentrale oder einem Street Cabinet, an dem Fasern aus dem Access zusammenlaufen und aktiv geschaltet werden. Größere PoPs dienen zugleich als Aggregationsknoten Richtung Backbone. Beispielsweise betreibt Deutsche Glasfaser in ländlichen Regionen zahlreiche PoPs (i.d.R. Container oder kleine Technikgebäude), die per Glasfaser mit zentraleren Knoten verbunden sind. Diese Anbindungen erfolgen redundant: entweder als Ring, der mehrere PoPs verbindet, oder als A/B-Leitung zu zwei verschiedenen Core-Standorten. In Backbone/Kernnetzen (Telekom spricht z. B. von Kern-PoPs) werden meist große Router in mindestens zwei zentralen Rechenzentren pro Region installiert, verbunden durch mehrere Fasern. Diese Core-PoPs sind oft vermascht (z. B. jeder Core-PoP mit mehreren anderen). Über diese Struktur werden nationale und internationale Daten geleitet. Im Aggregationsnetz darunter sind häufig Metro-Ringe im Einsatz: Beispielsweise verbindet ein städtischer Glasfaserring die wichtigen Knoten in der Stadt (Hauptverteiler, größere PoPs). So ein Metro-Core-Ring kann aus 4–10 oder mehr Stationen bestehen, inkl. Übergängen ins Backbone. Fällt innerorts eine Faser aus (z. B. Baggerbiss), übernimmt der Ring sofort den Datenverkehr über die Gegenrichtung. NetCologne etwa betreibt in Köln Ringsysteme, um Stadtteile redundant anzubinden (die Grundidee eines Glasfaserrings besteht darin, die Ausfallsicherheit zu erhöhen – Ausfall eines Abschnitts beeinträchtigt nicht die Erreichbarkeit der Standorte)
+de.linkedin.com
+. Zugangsnetze (Access) sind aus wirtschaftlichen Gründen meist nicht doppelt geführt – ein Haushalt wird idR über einen Weg angeschlossen. Allerdings kann innerhalb eines Wohngebiets der Betreiber zwei Wege in verschiedene PoPs vorsehen (seltener), oder benachbarte Straßenverteiler vermaschen. Die Hauptsicherung findet hier eher auf höherer Ebene statt: z. B. falls ein OLT-Gerät ausfällt, wird Kunden eventuell temporär über ein benachbartes OLT versorgt (dynamische Umschaltung kommt hier aber an Grenzen, da PON-Splitter fix sind – daher werden OLTs meist selbst redundant bestückt). Viele FTTH-Betreiber dimensionieren ihre Access-PoPs mit Backup-Stromversorgung (USV, Generator) und mindestens doppelten Uplink-Ports, damit ein Geräte- oder Portausfall nicht alle Anschlüsse isoliert.
+Ringstrukturen mit automatischer Schutzumschaltung (Metro/Core-Ringe)
+Die Verwendung redundanter Glasfaser-Ringe ist in städtischen und regionalen Netzen verbreitet, um hohe Verfügbarkeit zu gewährleisten. Ein Ring verbindet typischerweise mehrere zentrale Knoten (z. B. städtische Verteiler, regionale PoPs) kreisförmig, sodass ein geschlossener Loop entsteht. Der große Vorteil ist die eingebaute Single-Failure-Toleranz: Bei einem Faserbruch auf einer Ringstrecke wird der Datenverkehr automatisch in die andere Richtung geleitet. Dieses Prinzip der selbstheilenden Ringe entstammt klassischen Telekomnetzen (SDH/SONET mit 1+1 oder 1:1 MSP – Multiplex Section Protection). Damals garantierte der Ring eine Umschaltzeit unter 50 ms, wodurch Dienste wie Telefonie unterbrechungsfrei blieben. Heutzutage werden Glasfaser-Ringe meist auf Ethernet/IP-Ebene betrieben. Die automatische Schutzumschaltung wird durch Protokolle wie oben beschrieben (ERPS G.8032 auf L2 oder OSPF auf L3) realisiert. Beispielsweise kann ein Metro-Ethernet-Ring mit ERPS einen Faserbruch in etwa 50 Millisekunden ausregeln, indem ein zuvor blockierter Port freigegeben wird
+alliedtelesis.com
+. In IP-Ring-Topologien mit Routing übernimmt das Routingprotokoll die Umschaltung: Fällt ein Link aus, erkennen die Router den Verlust und senden den Traffic über den intakten Teil des Rings. In beiden Fällen bleibt die Konnektivität zwischen allen Knoten des Rings bestehen – kein Standort ist isoliert. Metro-Ring-Beispiel: Tele Columbus (Marke PŸUR) hat 2021/2022 mehrere Glasfaser-Metro-Ringe in deutschen Bundesländern aufgebaut, oft in Kooperation mit der Deutschen Bahn (DB broadband). So wurde ein 925 km langer Baden-Württemberg-Ring vereinbart, der Orte wie Heidelberg, Karlsruhe, Rheinfelden u. a. verbindet
+tarif4you.de
+tarif4you.de
+. Dieses Ringsystem nutzt vorhandene DB-Glasfasern und ermöglicht Tele Columbus, regionale Netze redundant anzubinden. Laut Mitteilung gewährleistet der neue Ring durch redundante Anbindung eine Netzverfügbarkeit auf höchstem Niveau und schafft zentrale Ankopplung für wachsende Bandbreiten
+tarif4you.de
+. Ähnliche Projekte liefen in Thüringen und Mecklenburg-Vorpommern, was zeigt, dass Ring-Konzepte auch über größere geografische Bereiche zur Ausfallsicherheit eingesetzt werden. Im Backbone (Core-Netz) der Telekom sind traditionell ebenfalls Ringstrukturen genutzt worden – früher SDH-Dualringe zwischen Knoten, heute oft überlagert durch ein vermaschtes IP-MPLS-Netz. Aber auch Telekom setzt in Metro-/Zugangsbereichen Ringe ein: z. B. OPAL-Ringe in FTTC-Zeiten (VDSL) oder jetzt in FTTH das Konzept, mehrere zentrale Verteiler über Ring zu koppeln. NetCologne betreibt einen städtischen Glasfaser-Backbone mit Ringen in Köln und Umland, um jeden Stadtteil über zwei Wege zu erreichen (lokale Redundanz nützt allerdings wenig, wenn ein Core-Router ausfällt – daher gehören Endpunkte ebenfalls redundant ausgeführt)
+x.com
+. Technisch werden Ringe entweder rein auf L2 (mit ERPS/MSTP) oder auf L3 (IP-Routing) umgesetzt, oder sogar auf optischer Ebene: DWDM-Systeme können Ring-Topologien mit optischem Schutzschalten verwenden. Beispielsweise lassen sich zwei gegenläufige Wellenlängenpfade einrichten (East/West), von denen einer standby ist – ein Optik-Switch am Knoten wählt das Signal des intakten Pfades im Fehlerfall (ähnlich MSP bei SDH). Große Betreiber modernisieren ihre optischen Netze mit ROADM-Technologie, die flexible Ring-/Mesh-Strukturen erlaubt. Deutsche Glasfaser z. B. hat 2023 begonnen, ihr Transportnetz mit neuen DWDM-Systemen (Ekinops360) auszustatten, inklusive “colorless, gridless ROADM”-Architektur auf allen Ebenen (Core, Aggregation, lokale Technikstandorte)
+ekinops.com
+. Damit können Ringsignale dynamisch geschaltet werden. Dennoch wird meist das IP-Overlay entscheiden, wohin Traffic geht – die Optik stellt nur sicher, dass mindestens ein Pfad physisch verfügbar ist.
+Praktische Umsetzung bei Deutsche Glasfaser, Telekom, NetCologne
+Deutsche Glasfaser (DG): Als einer der größten alternativen FTTH-Anbieter (v. a. im ländlichen Raum) hat DG eine klare Architektur: In den Ausbaugebieten stehen lokale PoP-Container, von denen Fasern in die Haushalte führen (meist XGS-PON-Technik seit 2024
+nokia.com
+). Diese PoPs werden dann an das zentrale Backbone von DG angeschlossen. Für die Backbone-Anbindung kooperiert DG mit GasLINE (einem überregionalen Glasfaser-Backbone)
+glasfaserforum.de
+. Die Redundanz-Strategie von DG folgt dem Motto „Ring statt doppelter Anfangstrasse“: Neue Gebiete werden in Schleifen aneinandergereiht, und erst wenn ein Ring geschlossen ist, haben die Orte zwei Einspeisungswege
+glasfaserforum.de
+. So entsteht nach und nach ein vermashctes Regionalnetz. DG selbst bestätigt, dass das Backbone (Kernnetz) sicher bereits redundant ausgelegt ist
+glasfaserforum.de
+ – d.h. die Hauptknoten (z. B. ihre zentralen Routerstandorte) sind auf unterschiedlichen Wegen verbunden. Auf lokaler Ebene gab es allerdings Ausfälle in der Vergangenheit, weil noch kein Ringschluss vorhanden war (ein Beispiel 2021: eine durch Tiefbau beschädigte DG-Backbone-Leitung im Raum NRW legte mehrere Gemeinden lahm, bis repariert wurde
+glasfaserforum.de
+glasfaserforum.de
+). DG lernt und investiert hier laufend: Sobald neue Nachbargebiete ausgebaut sind, wird eine zweite Route geschaffen. In Bundesländern wie Brandenburg oder Nordrhein-Westfalen bildet DG inzwischen große Ringsysteme, um Kommunen redundant anzuschließen – oft in Zusammenarbeit mit kommunalen Partnern. Außerdem hat DG die Core-Technik modernisiert: Mit Ekinops wurde ein einheitliches optisches Transportnetz implementiert, das alle Netzebenen (Core, Aggregation, Central Office) abdeckt
+ekinops.com
+. Dadurch kann DG effizienter für Redundanz sorgen, etwa durch “alien wavelength”-Services zur temporären Routenführung im Fehlerfall
+ekinops.com
+. Insgesamt folgt DG modernen Open-Access-Standards: Sie betreiben ein offenes Netz, das auch anderen Anbietern (z. B. Vodafone, 1&1) per Bitstrom zur Verfügung steht. Redundanz kommt dabei auch dem Wholesale-Partner zugute. DGs Netz ist damit ein Beispiel für FTTH mit ringförmiger Backbone-/Aggregationsstruktur und zunehmender Meshing im Wachstum – ein pragmatischer Ansatz, der Ausfallsicherheit verbessert, sobald genügend Knoten vorhanden sind. Deutsche Telekom: Als Ex-Monopolist hat die Telekom ein landesweites Netz mit mehreren Ebenen. Ihre klassische Topologie kann vereinfacht so beschrieben werden: Hauptknoten (Core-Nodes) in ganz Deutschland (z. B. Frankfurt, Berlin, Hamburg, München etc.) sind vermascht und durch ein MPLS/IP-Kernnetz verbunden. Darunter liegen Regionale Knoten (früher HVt, jetzt oft BNG-Standorte), die jeweils mehrere lokale Vermittlungsstellen/PoPs aggregieren. In den Städten und auf dem Land verbindet die Telekom die ehemaligen Vermittlungsstellen typischerweise in Ringstrukturen. Schon in der Telefon-Ära gab es sogenannte OPAL-Ringe oder SDH-Ringe, um Ortsnetze redundant an die übergeordneten Knoten anzubinden. Heute im Glasfaser-Zeitalter führt die Telekom ähnliche Prinzipien fort: Jede neue Technikzentrale (z. B. ein Outdoor-MSAN oder OLT) wird möglichst dual angebunden, entweder über zwei verschiedene Aggregationsknoten oder in einen Ring mit Nachbarstandorten. So soll kein Verteiler “am seidenen Faden” hängen. Ein praktisches Beispiel: Bei den BNG (Broadband Network Gateway)-Einführungen wurden Regionen so aufgeteilt, dass immer zwei BNG-Knoten ein Versorgungsgebiet bedienen – fällt einer aus, übernimmt der andere (mithilfe von Redundanzprotokollen und ausreichend Transportkapazität)
+bundesnetzagentur.de
+rtbrick.com
+. Auch die Glasfaserzuführung von Mobilfunkstationen (FTTS) realisiert Telekom häufig über Ring oder Stern mit Alternativpfad, um Mobilfunkausfälle durch Glasfaserschnitte zu minimieren. Generell hält die Telekom strenge SLAs ein, was ohne Redundanz nicht möglich wäre. Allerdings sind auch bei der Telekom nicht alle Netze vollständig redundant – z. B. letzte Meile zum Kunden meist nicht, und es gab bekannte Vorfälle (etwa der Lufthansa-Ausfall 2023, als bei Bauarbeiten beide Glasfasern einer vermeintlich divers geführten Strecke zerstört wurden, was aufzeigt, dass echte Trassenredundanz schwierig sein kann, wenn Bündel nahe beieinander liegen
+reddit.com
+). Insgesamt gilt Telekom als Benchmark für Redundanz-Standards in Deutschland: Kabel doppel geführt, Knoten doppelt besetzt, USV/Notstrom überall, und Kernrouter in geografisch redundanten Rechenzentren. NetCologne: Der Kölner Stadtnetzbetreiber betreibt ein regionales Glasfasernetz in Köln/Bonn und Umgebung. NetCologne setzt stark auf Kooperation (z. B. mit Energieversorgern oder nun mit Deutsche Glasfaser für Open Access) und auf Ringstrukturen in der Metro-Ebene. Ein bekanntes Konzept ist der KölnRing, der wichtige Knotenpunkte in Köln verbindet. Zudem bestehen Ringe bzw. duale Zuführungen in den Kreisen um Köln (Rhein-Erft, Rhein-Berg, Aachen-Region) – oft durch Faserpachten bei Partnern. Die Grundidee eines Glasfaserrings wird auch von NetCologne propagiert: Ausfallsicherheit, damit beim Faserausfall an einer Stelle andere Knoten weiterhin von der anderen Seite versorgt werden
+de.linkedin.com
+. Für Unternehmen in Köln bietet NetCologne z. B. Carrier-Ethernet mit zwei PoP-Anschlüssen (auf Nachfrage), um Standortvernetzungen redundant zu gestalten. Technisch nutzt NetCologne Metro-Ethernet-Switches (teils Cisco, Nokia) mit ERPS in städtischen Ringen und fährt ein IP/MPLS-Core für überregionale Verbindungen (z. B. zum DE-CIX). Die Redundanzpraktiken ähneln denen größerer Carrier im Kleinen: Rechenzentrum in Köln und eins in der Region mit redundanter Kopplung, städtische Verteiler doppelt angebunden, aktive Komponenten (Router, Switches) redundant ausgelegt. Durch die regionale Fokussierung sind die Ringe kürzer, was schnelles Umschalten erleichtert. Ein spezielles Beispiel ist NetColognes Engagement bei der InfraLoop: einem Ringschluss um Köln in Kooperation mit Energieversorgern, um Dark Fiber Ringe kommerziell bereitzustellen. Solche Initiativen zeigen, dass Ring-Topologien als Best Practice gelten – BREKO und BUGLAS (Branchenverbände) verweisen regelmäßig auf Glasfaserringe bei City-Carriern als Mittel zu höherer Resilienz.
+Fazit
+Deutsche Glasfasernetze kombinieren heute physische Redundanz (geografisch verteilte Faserrouten) und logische Mechanismen (Protokolle auf Layer 2/3), um eine maximale Verfügbarkeit zu erreichen. Ring-Topologien spielen dabei eine zentrale Rolle – von Metro-Ringen in Städten, die bei Ausfall in Millisekunden Schutzumschaltung bieten
+tarif4you.de
+, bis hin zu Backbone-Ringen über ganze Bundesländer
+tarif4you.de
+. Typische Redundanzprotokolle wie RSTP (reduziert Ausfallzeiten auf <1 Sekunde)
+de.wikipedia.org
+, ERPS (~50 ms Failover)
+alliedtelesis.com
+, LAG/LACP (nahtloser Link-Ersatz) und OSPF/BGP (dynamisches Routing für schnelle Umschaltung) sorgen dafür, dass die physischen Backup-Pfade auch sofort genutzt werden. Netzbetreiber wie Deutsche Glasfaser setzen vermehrt auf hierarchische Ringsysteme und bauen Redundanz iterativ aus – jedes neue Ausbaugebiet erhöht die Vermaschung des Netzes
+glasfaserforum.de
+. Die Deutsche Telekom als Referenz hat ein nahezu voll redundantes Kernnetz und ringförmige Zubringer, während NetCologne und andere Stadtnetzbetreiber auf kompakte Glasfaserringe zur lokalen Absicherung setzen. Insgesamt folgen die Praktiken dem Grundsatz: Keine einzelne Komponente darf ein “Single Point of Failure” sein. Durch Redundanz in physischer Kabelinfrastruktur, Netzdesign (Topologie) und Protokollsteuerung werden Glasfasernetze in Deutschland robust gegenüber Störungen gemacht – ein essenzielles Merkmal angesichts der Abhängigkeit von zuverlässigem Breitband in Wirtschaft und Gesellschaft. Quellen: Die Darstellung stützt sich auf Branchenberichte, Forumseinträge aus der Netzbetreiber-Praxis und Mitteilungen der Carrier. Beispiele wie der Tele Columbus Glasfaserring
+tarif4you.de
+tarif4you.de
+ oder Aussagen zur DG-Netzplanung
+glasfaserforum.de
+glasfaserforum.de
+ illustrieren real umgesetzte Redundanzkonzepte. Technische Details zu Protokollen sind durch Standards und Literatur untermauert (z. B. Wikipedia zu RSTP
+de.wikipedia.org
+, Allied Telesis zu ERPS
+alliedtelesis.com
+). Diese Kombination von praktischen und technischen Quellen zeigt ein umfassendes Bild aktueller Redundanz-Topologien in deutschen Glasfasernetzen.
+Citations
+Favicon
+#breko #glasfaserausbau #netcologne #glasfaser | BREKO Bundesverband Breitbandkommunikation e.V. | 20 Kommentare
+
+https://de.linkedin.com/posts/bundesverband-breitbandkommunikation-e-v-breko-_breko-glasfaserausbau-netcologne-activity-7238802057921507328-tvxN
+Erläuterung der SRP-Ringtopologie
+
+https://www.cisco.com/c/de_de/support/docs/optical/spatial-reuse-protocol-dynamic-packet-transport-srp-dpt/29860-understand-srp-topo.pdf
+Favicon
+Tele Columbus und DB broadband errichten neuen Glasfaserring : tarif4you.de
+
+https://www.tarif4you.de/news/n23065.html?utm_source=newsfeed&utm_medium=rss&utm_campaign=news
+[PDF] Analytisches Kostenmodell für das Breitbandnetz 2010
+
+https://www.bundesnetzagentur.de/SharedDocs/Downloads/DE/Sachgebiete/Telekommunikation/Unternehmen_Institutionen/Marktregulierung/Massstaebe_Methoden/Kostenmodelle/Breitbandnetz2x/WIKAuswertungStellgn20100927pdf.pdf?__blob=publicationFile&v=3
+Favicon
+12.04.2021- Störung "Kein Internet/Ausfall" Deutsche Glasfaser Störung Weyhe / Stuhr - Aktuelle Störungen - Glasfaserforum.de - Das Informations- und Hilfeforum rund um das Glasfaser-Internet.
+
+https://www.glasfaserforum.de/forum/thread/905-12-04-2021-stoerung-kein-internet-ausfall-deutsche-glasfaser-stoerung-weyhe-stuh/
+Favicon
+Spanning Tree Protocol – Wikipedia
+
+https://de.wikipedia.org/wiki/Spanning_Tree_Protocol
+Favicon
+Spanning Tree Protocol – Wikipedia
+
+https://de.wikipedia.org/wiki/Spanning_Tree_Protocol
+Favicon
+Spanning Tree Protocol – Wikipedia
+
+https://de.wikipedia.org/wiki/Spanning_Tree_Protocol
+Favicon
+G.8032 Ethernet Ring Protection Switching Feature Overview and ...
+
+https://www.alliedtelesis.com/us/en/documents/g8032-ethernet-ring-protection-switching-feature-overview-and-configuration-guide
+G.8032 Ethernet ring protection switching
+
+https://documentation.nokia.com/sr/22-10/books/services-overview/g.8032-ethernet-r-protection-switch.html
+G.8032 Ethernet ring protection switching
+
+https://documentation.nokia.com/sr/22-10/books/services-overview/g.8032-ethernet-r-protection-switch.html
+Favicon
+Advantages of Ring Topologies in Networking
+
+https://www.black-box.de/en-de/page/41449/Resources/Technical-Resources/Black-Box-Explains/Networking/Ring-Topologies-in-Networking
+Erläuterung der SRP-Ringtopologie
+
+https://www.cisco.com/c/de_de/support/docs/optical/spatial-reuse-protocol-dynamic-packet-transport-srp-dpt/29860-understand-srp-topo.pdf
+Favicon
+BGP oder OSPF: Wann ist welches Routing-Protokoll besser? | Computer Weekly
+
+https://www.computerweekly.com/de/tipp/BGP-versus-OSPF-Wann-welches-Routing-Protokoll-verwenden
+Favicon
+BGP oder OSPF: Wann ist welches Routing-Protokoll besser? | Computer Weekly
+
+https://www.computerweekly.com/de/tipp/BGP-versus-OSPF-Wann-welches-Routing-Protokoll-verwenden
+Favicon
+Tele Columbus und DB broadband errichten neuen Glasfaserring : tarif4you.de
+
+https://www.tarif4you.de/news/n23065.html?utm_source=newsfeed&utm_medium=rss&utm_campaign=news
+Favicon
+Tele Columbus und DB broadband errichten neuen Glasfaserring : tarif4you.de
+
+https://www.tarif4you.de/news/n23065.html?utm_source=newsfeed&utm_medium=rss&utm_campaign=news
+Favicon
+Willi Manilli على X: "@crashkid90 @LagaV Redundanzen sind nur ...
+
+https://x.com/hockeyfanberlin/status/1889685345207259642?lang=ar
+Deutsche Glasfaser Modernizes Its Network, Speeds Service Deployment with Ekinops
+
+https://www.ekinops.com/news/customers/deutsche-glasfaser-modernizes-its-network-speeds-service-deployment-with-ekinops
+Favicon
+Deutsche Glasfaser chooses Nokia for innovative country-wide ...
+
+https://www.nokia.com/customer-success/deutsche-glasfaser-chooses-nokia-for-innovative-country-wide-broadband-network-in-germany/
+Favicon
+12.04.2021- Störung "Kein Internet/Ausfall" Deutsche Glasfaser Störung Weyhe / Stuhr - Aktuelle Störungen - Glasfaserforum.de - Das Informations- und Hilfeforum rund um das Glasfaser-Internet.
+
+https://www.glasfaserforum.de/forum/thread/905-12-04-2021-stoerung-kein-internet-ausfall-deutsche-glasfaser-stoerung-weyhe-stuh/
+Favicon
+12.04.2021- Störung "Kein Internet/Ausfall" Deutsche Glasfaser Störung Weyhe / Stuhr - Aktuelle Störungen - Glasfaserforum.de - Das Informations- und Hilfeforum rund um das Glasfaser-Internet.
+
+https://www.glasfaserforum.de/forum/thread/905-12-04-2021-stoerung-kein-internet-ausfall-deutsche-glasfaser-stoerung-weyhe-stuh/
+Favicon
+12.04.2021- Störung "Kein Internet/Ausfall" Deutsche Glasfaser Störung Weyhe / Stuhr - Aktuelle Störungen - Glasfaserforum.de - Das Informations- und Hilfeforum rund um das Glasfaser-Internet.
+
+https://www.glasfaserforum.de/forum/thread/905-12-04-2021-stoerung-kein-internet-ausfall-deutsche-glasfaser-stoerung-weyhe-stuh/
+Favicon
+12.04.2021- Störung "Kein Internet/Ausfall" Deutsche Glasfaser Störung Weyhe / Stuhr - Aktuelle Störungen - Glasfaserforum.de - Das Informations- und Hilfeforum rund um das Glasfaser-Internet.
+
+https://www.glasfaserforum.de/forum/thread/905-12-04-2021-stoerung-kein-internet-ausfall-deutsche-glasfaser-stoerung-weyhe-stuh/
+Deutsche Glasfaser Modernizes Its Network, Speeds Service Deployment with Ekinops
+
+https://www.ekinops.com/news/customers/deutsche-glasfaser-modernizes-its-network-speeds-service-deployment-with-ekinops
+[PDF] BK3d-22-018_Beschluss_1. Teilentscheidung - Bundesnetzagentur
+
+https://www.bundesnetzagentur.de/DE/Beschlusskammern/1_GZ/BK3-GZ/2022/BK3-22-0018/BK3-22-0018_1.Teilentscheidung_DL_BF.pdf?__blob=publicationFile&v=3
+Favicon
+RtBrick Brings High Availability to Disaggregated Broadband Networks
+
+https://www.rtbrick.com/news-and-events/rtbrick-brings-high-availability-to-disaggregated-broadband-networks
+Favicon
+whats your toughts about Lufthansa (Fiber cable cut). - Reddit
+
+https://www.reddit.com/r/networking/comments/1130074/whats_your_toughts_about_lufthansa_fiber_cable_cut/
+All Sources
+Favicon
+de.linkedin
+cisco
+Favicon
+tarif4you
+bundesnetzagentur
+Favicon
+glasfaserforum
+Favicon
+de.wikipedia
+Favicon
+alliedtelesis
+documentation.nokia
+Favicon
+black-box
+Favicon
+computerweekly
+Favicon
+x
+ekinops
+Favicon
+nokia
+Favicon
+rtbrick
+Favicon
+reddit

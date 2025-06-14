@@ -1,0 +1,117 @@
+{
+  "nodes": [
+    {
+      "id": "core1",
+      "type": "CoreRouter",
+      "model": "Cisco ASR1002-X",
+      "os": "IOS XE",
+      "location": "Frankfurt",
+      "interfaces": [
+        {
+          "name": "Gi0/0/0",
+          "ip": "185.57.192.1",
+          "mac": "00:11:22:33:44:55"
+        },
+        {
+          "name": "Gi0/0/1",
+          "ip": "10.0.0.1",
+          "mac": "00:11:22:33:44:56"
+        },
+        {
+          "name": "Mgmt0",
+          "ip": "192.168.0.10"
+        }
+      ]
+    },
+    {
+      "id": "bng1",
+      "type": "BNG",
+      "model": "Juniper MX204",
+      "os": "Junos",
+      "location": "K\u00f6ln",
+      "interfaces": [
+        {
+          "name": "ge-0/0/0",
+          "ip": "10.0.0.2"
+        },
+        {
+          "name": "ge-0/0/1",
+          "ip": "100.72.15.1"
+        }
+      ]
+    },
+    {
+      "id": "olt1",
+      "type": "OLT",
+      "model": "Huawei MA5800-X17",
+      "location": "L\u00fcdinghausen",
+      "interfaces": [
+        {
+          "name": "gpon0/1/1",
+          "desc": "PON Port"
+        },
+        {
+          "name": "eth0",
+          "ip": "100.72.15.2"
+        }
+      ]
+    },
+    {
+      "id": "ont1",
+      "type": "ONT",
+      "model": "Huawei EchoLife HG8245H",
+      "location": "Kunde",
+      "interfaces": [
+        {
+          "name": "WAN",
+          "ip": "100.72.15.212"
+        },
+        {
+          "name": "LAN1",
+          "ip": "192.168.178.22"
+        }
+      ]
+    },
+    {
+      "id": "cpe1",
+      "type": "CPE",
+      "model": "AVM FritzBox 7590",
+      "location": "Kunde",
+      "interfaces": [
+        {
+          "name": "WAN",
+          "ip": "100.72.15.212",
+          "mac": "B8:27:EB:22:12:11"
+        },
+        {
+          "name": "LAN",
+          "ip": "192.168.178.22"
+        }
+      ]
+    }
+  ],
+  "links": [
+    {
+      "source": "core1",
+      "target": "bng1",
+      "type": "mpls"
+    },
+    {
+      "source": "bng1",
+      "target": "olt1",
+      "type": "vlan",
+      "vlan": 2001
+    },
+    {
+      "source": "olt1",
+      "target": "ont1",
+      "type": "pon",
+      "gpon_id": "OLT1-PON1-ONT11"
+    },
+    {
+      "source": "ont1",
+      "target": "cpe1",
+      "type": "ethernet"
+    }
+  ]
+}
