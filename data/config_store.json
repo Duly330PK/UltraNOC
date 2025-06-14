@@ -1,0 +1,10 @@
+[
+  {
+    "device_id": "core-router-1",
+    "config_data": "interface GigabitEthernet0/0\n description Uplink to ISP\n ip address 10.0.0.1 255.255.255.0"
+  },
+  {
+    "device_id": "core-router-2",
+    "config_data": "interface GigabitEthernet0/1\n description Backup Uplink\n ip address 10.0.1.1 255.255.255.0"
+  }
+]

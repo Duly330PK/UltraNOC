@@ -1,7 +1,9 @@
+# C:\noc_project\UltraNOC\backend\app\routers\device_telemetry.py
+
 from fastapi import APIRouter
 from pydantic import BaseModel
 from typing import List
-from datetime import datetime
+from datetime import datetime, timezone
 import uuid
 
 router = APIRouter()
@@ -19,7 +21,7 @@ class TelemetryEntry(BaseModel):
 @router.post("/push")
 def push_telemetry(entry: TelemetryEntry):
     entry.id = str(uuid.uuid4())
-    entry.timestamp = datetime.utcnow().isoformat()
+    entry.timestamp = datetime.now(timezone.utc).isoformat()
     telemetry_data.append(entry)
     return entry
 

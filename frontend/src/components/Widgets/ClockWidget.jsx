@@ -1,6 +1,8 @@
+// C:\noc_project\UltraNOC\frontend\src\components\Widgets\ClockWidget.jsx
+
 import React, { useEffect, useState } from "react";
 
-function ClockWidget() {
+export default function ClockWidget() {
   const [time, setTime] = useState(new Date());
 
   useEffect(() => {
@@ -9,11 +11,11 @@ function ClockWidget() {
   }, []);
 
   return (
-    <div className="p-4 rounded-xl shadow bg-white text-center">
-      <h2 className="text-xl font-semibold">Systemzeit</h2>
-      <p className="text-2xl mt-2 font-mono">{time.toLocaleTimeString()}</p>
+    <div className="bg-nocgray p-6 rounded-2xl shadow-lg">
+      <h2 className="text-xl font-semibold mb-2">🕒 Aktuelle Uhrzeit</h2>
+      <p className="text-2xl font-mono">
+        {time.toLocaleTimeString("de-DE")}
+      </p>
     </div>
   );
 }
-
-export default ClockWidget;

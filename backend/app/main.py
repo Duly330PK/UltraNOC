@@ -20,9 +20,22 @@ from app.routers import device_health, scheduled_tasks, incident_summary
 from app.routers import cable_diagnostics, access_log, interface_stats
 from app.routers import device_telemetry, ping_tool, flow_archive
 from app.routers import license_check, ws_telemetry, cli_playback
-from app.routers import auth  # hinzufügen
+from app.routers import auth 
+from app.routers import device_metrics
+from app.routers import config_store
+from fastapi.middleware.cors import CORSMiddleware
+
 
 app = FastAPI(title="UltraNOC API")
+
+# CORS für Frontend-Freigabe
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Routerregistrierungen
 app.include_router(cli.router, prefix="/api/v1/cli")
@@ -74,3 +87,5 @@ app.include_router(license_check.router, prefix="/api/v1/license", tags=["Licens
 app.include_router(ws_telemetry.router, tags=["WebSocket"])
 app.include_router(cli_playback.router, prefix="/api/v1/playback", tags=["CLI Playback"])
 app.include_router(auth.router, prefix="/api/v1/auth") 
+app.include_router(device_metrics.router, prefix="/api/v1/metrics", tags=["Metrics"])
+app.include_router(config_store.router, prefix="/api/v1/config", tags=["Config Store"])

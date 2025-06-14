@@ -1,5 +1,721 @@
-fastapi
-uvicorn
-sqlalchemy
-psycopg2-binary
-pydantic
+git\scm0\input:
+
+
+
+-----
+
+c:\noc_project\UltraNOC\backend\app\main.py:
+
+from fastapi import FastAPI
+from app.routers import cli, devices, topology, users, alarms, tickets, simulation
+from app.simulation import nat  # <- NAT-Router importieren
+from app.simulation import failover  # <- Import
+from app.simulation import live_flow
+from app.routers import roles
+from app.routers import scenarios, fiber_types
+from app.routers import network_quality
+from app.routers import grafik_export
+from app.routers import audit_log, vlans
+from app.routers import session_data
+from app.routers import user_preferences, topology_meta
+from app.routers import alerting, maintenance
+from app.routers import dns_lookup, syslog_collector
+from app.routers import device_ports, topomap_preview, ipv6_tools
+from app.routers import cgnat_lookup, maintenance_schedule, system_probe
+from app.routers import event_trigger, ping_simulator, snapshot_handler
+from app.routers import cgnat_pool, device_inventory, topo_export
+from app.routers import device_health, scheduled_tasks, incident_summary
+from app.routers import cable_diagnostics, access_log, interface_stats
+from app.routers import device_telemetry, ping_tool, flow_archive
+from app.routers import license_check, ws_telemetry, cli_playback
+
+app = FastAPI(title="UltraNOC API")
+
+# Routerregistrierungen
+app.include_router(cli.router, prefix="/api/v1/cli")
+app.include_router(devices.router, prefix="/api/v1/devices")
+app.include_router(topology.router, prefix="/api/v1/topology")
+app.include_router(users.router, prefix="/api/v1/users")
+app.include_router(alarms.router, prefix="/api/v1/alarms")
+app.include_router(tickets.router, prefix="/api/v1/tickets")
+app.include_router(simulation.router, prefix="/api/v1/simulation")
+app.include_router(nat.router, prefix="/api/v1/simulation/nat", tags=["NAT"])  # <- NAT-Router einbinden
+app.include_router(failover.router, prefix="/api/v1/simulation/failover", tags=["Failover"])  # <- Router einbinden
+app.include_router(live_flow.router, prefix="/api/v1/simulation/live", tags=["Traffic"])
+app.include_router(roles.router, prefix="/api/v1/roles", tags=["Roles"])
+app.include_router(scenarios.router, prefix="/api/v1/scenario", tags=["Scenarios"])
+app.include_router(fiber_types.router, prefix="/api/v1/fiber", tags=["Fiber"])
+app.include_router(network_quality.router, prefix="/api/v1/network", tags=["Quality"])
+app.include_router(grafik_export.router, prefix="/api/v1/export", tags=["Export"])
+app.include_router(audit_log.router, prefix="/api/v1/audit", tags=["Audit"])
+app.include_router(vlans.router, prefix="/api/v1/vlans", tags=["VLANs"])
+app.include_router(session_data.router, prefix="/api/v1/sessions", tags=["Sessions"])
+app.include_router(user_preferences.router, prefix="/api/v1/preferences", tags=["Preferences"])
+app.include_router(topology_meta.router, prefix="/api/v1/topology", tags=["Metadata"])
+app.include_router(alerting.router, prefix="/api/v1/alerts", tags=["Alerts"])
+app.include_router(maintenance.router, prefix="/api/v1/maintenance", tags=["Maintenance"])
+app.include_router(dns_lookup.router, prefix="/api/v1/tools/dns", tags=["DNS"])
+app.include_router(syslog_collector.router, prefix="/api/v1/syslog", tags=["Syslog"])
+app.include_router(device_ports.router, prefix="/api/v1/devices", tags=["Ports"])
+app.include_router(topomap_preview.router, prefix="/api/v1/topology", tags=["Preview"])
+app.include_router(ipv6_tools.router, prefix="/api/v1/tools/ipv6", tags=["IPv6"])
+app.include_router(cgnat_lookup.router, prefix="/api/v1/cgnat", tags=["CGNAT"])
+app.include_router(maintenance_schedule.router, prefix="/api/v1/maintenance", tags=["Schedule"])
+app.include_router(system_probe.router, prefix="/api/v1/system", tags=["Health"])
+app.include_router(event_trigger.router, prefix="/api/v1/events", tags=["Events"])
+app.include_router(ping_simulator.router, prefix="/api/v1/tools", tags=["Ping"])
+app.include_router(snapshot_handler.router, prefix="/api/v1/snapshots", tags=["Snapshots"])
+app.include_router(cgnat_pool.router, prefix="/api/v1/cgnat", tags=["CGNAT"])
+app.include_router(device_inventory.router, prefix="/api/v1/inventory", tags=["Inventory"])
+app.include_router(topo_export.router, prefix="/api/v1/topology/export", tags=["Topology Export"])
+app.include_router(device_health.router, prefix="/api/v1/devices/health", tags=["Device Health"])
+app.include_router(scheduled_tasks.router, prefix="/api/v1/scheduler", tags=["Scheduler"])
+app.include_router(incident_summary.router, prefix="/api/v1/incidents", tags=["Incidents"])
+app.include_router(cable_diagnostics.router, prefix="/api/v1/cables/diagnostics", tags=["Cables"])
+app.include_router(access_log.router, prefix="/api/v1/logs", tags=["Access Logs"])
+app.include_router(interface_stats.router, prefix="/api/v1/interfaces", tags=["Interface Stats"])
+app.include_router(device_telemetry.router, prefix="/api/v1/telemetry", tags=["Telemetry"])
+app.include_router(ping_tool.router, prefix="/api/v1/tools", tags=["Ping Tool"])
+app.include_router(flow_archive.router, prefix="/api/v1/archive", tags=["Flow Archive"])
+app.include_router(license_check.router, prefix="/api/v1/license", tags=["License"])
+app.include_router(ws_telemetry.router, tags=["WebSocket"])
+app.include_router(cli_playback.router, prefix="/api/v1/playback", tags=["CLI Playback"])
+
+-----
+
+c:\noc_project\UltraNOC\backend\app\routers\topology_meta.py:
+
+from fastapi import APIRouter
+import json
+import os
+
+router = APIRouter()
+
+TOPO_FILE = "data/topology_metadata.json"
+
+@router.get("/meta")
+def get_topology_metadata():
+    if os.path.exists(TOPO_FILE):
+        with open(TOPO_FILE, "r") as f:
+            return json.load(f)
+    return {"error": "topology metadata not found"}
+
+@router.post("/meta")
+def save_topology_metadata(data: dict):
+    os.makedirs(os.path.dirname(TOPO_FILE), exist_ok=True)  # ← das hinzufügen
+    with open(TOPO_FILE, "w") as f:
+        json.dump(data, f, indent=2)
+    return {"status": "saved"}
+
+
+
+
+-----
+
+c:\noc_project\UltraNOC\backend\app\routers\cable_diagnostics.py:
+
+from fastapi import APIRouter
+from pydantic import BaseModel
+from typing import List
+from datetime import datetime
+import uuid
+
+router = APIRouter()
+
+diagnostics_data = []
+
+class CableDiagnostic(BaseModel):
+    id: str = None
+    cable_id: str
+    attenuation_db: float
+    length_m: float
+    result: str = None
+    timestamp: str = None
+
+class CableTest(BaseModel):
+    cable_id: str
+
+@router.post("/run", response_model=CableDiagnostic)
+def run_diagnostic(entry: CableDiagnostic):
+    entry.id = str(uuid.uuid4())
+    entry.timestamp = datetime.utcnow().isoformat()
+    entry.result = "PASS" if entry.attenuation_db < 5.0 else "FAIL"
+    diagnostics_data.append(entry)
+    return entry
+
+@router.get("/results", response_model=List[CableDiagnostic])
+def get_results():
+    return diagnostics_data
+
+@router.post("/diagnose")
+def diagnose_cable(req: CableTest):
+    return {
+        "id": str(uuid.uuid4()),
+        "cable_id": req.cable_id,
+        "length_m": 137,
+        "status": "ok",
+        "loss_db": 0.8,
+        "timestamp": datetime.utcnow().isoformat()
+    }
+
+
+-----
+
+c:\noc_project\UltraNOC\backend\tests\test_cable_diagnostics.py:
+
+import requests
+
+BASE_URL = "http://localhost:8000/api/v1/cables/diagnostics"
+
+def test_run_manual_diagnostic():
+    data = {
+        "cable_id": "fiber123",
+        "attenuation_db": 4.7,
+        "length_m": 750.0
+    }
+    response = requests.post(f"{BASE_URL}/run", json=data)
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["result"] == "PASS"
+    assert payload["cable_id"] == "fiber123"
+
+def test_diagnose_auto():
+    data = { "cable_id": "fiber456" }
+    response = requests.post(f"{BASE_URL}/diagnose", json=data)
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["status"] == "ok"
+    assert "loss_db" in payload
+
+
+-----
+
+c:\noc_project\UltraNOC\backend\app\routers\ipv6_tools.py:
+
+from fastapi import APIRouter
+from pydantic import BaseModel
+import ipaddress
+
+router = APIRouter()
+
+class IPv6Query(BaseModel):
+    address: str
+
+@router.post("/analyze")
+def validate_ipv6(query: IPv6Query):
+    try:
+        ip = ipaddress.IPv6Address(query.address)
+        return {"address": str(ip), "valid": True}
+    except ValueError:
+        return {"address": query.address, "valid": False}
+
+
+-----
+
+c:\noc_project\UltraNOC\backend\app\routers\event_trigger.py:
+
+from fastapi import APIRouter
+from pydantic import BaseModel
+import uuid
+from datetime import datetime
+
+router = APIRouter()
+
+events = []
+
+class TriggerEvent(BaseModel):
+    source: str
+    event_type: str
+    detail: str
+
+@router.post("/trigger")
+def trigger_event(event: TriggerEvent):
+    record = {
+        "id": str(uuid.uuid4()),
+        "source": event.source,
+        "event_type": event.event_type,
+        "detail": event.detail,
+        "timestamp": datetime.utcnow().isoformat()
+    }
+    events.append(record)
+    return record
+
+@router.get("/triggered")
+def list_events():
+    return events
+
+
+-----
+
+c:\noc_project\UltraNOC\backend\app\routers\ping_simulator.py:
+
+from fastapi import APIRouter
+from pydantic import BaseModel
+import random
+
+router = APIRouter()
+
+class PingRequest(BaseModel):
+    ip: str
+
+@router.post("/simulate")
+def ping(req: PingRequest):
+    reachable = random.choice([True] * 9 + [False])  # 90% reachable
+    return {"ip": req.ip, "reachable": reachable}
+
+
+-----
+
+c:\noc_project\UltraNOC\backend\app\routers\device_inventory.py:
+
+from fastapi import APIRouter
+import os
+
+router = APIRouter()
+
+DEVICE_FILE = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "data", "devices.yml"))
+
+@router.get("/list")
+def get_inventory():
+    if os.path.exists(DEVICE_FILE):
+        with open(DEVICE_FILE, "r") as f:
+            return {"status": "ok", "device_count": sum(1 for _ in f if _.strip().startswith("-"))}
+    return {"status": "error", "message": "devices.yml not found"}
+
+
+-----
+
+c:\noc_project\UltraNOC\backend\app\routers\device_health.py:
+
+from fastapi import APIRouter
+from pydantic import BaseModel
+from typing import List
+from datetime import datetime
+import uuid
+
+router = APIRouter()
+
+device_health_data = []
+
+class DeviceHealth(BaseModel):
+    id: str = None
+    device: str
+    cpu_usage: float
+    memory_usage: float
+    timestamp: str = None
+
+@router.post("/report")
+def report_health(entry: DeviceHealth):
+    entry.id = str(uuid.uuid4())
+    entry.timestamp = datetime.utcnow().isoformat()
+    device_health_data.append(entry)
+    return entry
+
+@router.get("/status", response_model=List[DeviceHealth])
+def get_status():
+    return device_health_data
+
+
+-----
+
+c:\noc_project\UltraNOC\backend\app\routers\scheduled_tasks.py:
+
+from fastapi import APIRouter
+from pydantic import BaseModel
+from typing import List
+import uuid
+from datetime import datetime
+
+router = APIRouter()
+
+scheduled_tasks = []
+
+class ScheduledTask(BaseModel):
+    id: str = None
+    task: str
+    run_at: str
+
+@router.post("/add")
+def add_task(task: ScheduledTask):
+    task.id = str(uuid.uuid4())
+    scheduled_tasks.append(task)
+    return task
+
+@router.get("/list", response_model=List[ScheduledTask])
+def list_tasks():
+    return scheduled_tasks
+
+
+-----
+
+c:\noc_project\UltraNOC\backend\app\routers\incident_summary.py:
+
+from fastapi import APIRouter
+import uuid
+from datetime import datetime
+
+router = APIRouter()
+
+incidents = []
+
+@router.post("/raise")
+def raise_incident(source: str, impact: str):
+    entry = {
+        "id": str(uuid.uuid4()),
+        "source": source,
+        "impact": impact,
+        "timestamp": datetime.utcnow().isoformat()
+    }
+    incidents.append(entry)
+    return entry
+
+@router.get("/summary")
+def get_summary():
+    return incidents
+
+
+-----
+
+c:\noc_project\UltraNOC\run_all_tests.ps1:
+
+# Pfad zu den Tests
+$testDir = "backend/tests"
+$testFiles = @(
+    "test_cable_diagnostics.py",
+    "test_ipv6_tools.py",
+    "test_event_trigger.py",
+    "test_device_health.py",
+    "test_scheduled_tasks.py",
+    "test_incidents.py",
+    "test_ping_tool.py"
+)
+
+Write-Host "`nStarte Tests..." -ForegroundColor Cyan
+
+foreach ($testFile in $testFiles) {
+    $fullPath = Join-Path $testDir $testFile
+    Write-Host "`n>>> Teste: $testFile" -ForegroundColor Yellow
+    pytest $fullPath
+}
+
+Write-Host "`nAlle Tests abgeschlossen." -ForegroundColor Green
+
+
+-----
+
+c:\noc_project\UltraNOC\backend\tests\test_ipv6_tools.py:
+
+import requests
+
+def test_validate_ipv6():
+    payload = { "address": "2001:0db8::1" }
+    response = requests.post("http://localhost:8000/api/v1/tools/ipv6/analyze", json=payload)
+    assert response.status_code == 200
+    result = response.json()
+    assert result["valid"] is True
+
+-----
+
+c:\noc_project\UltraNOC\backend\app\routers\ping_tool.py:
+
+from fastapi import APIRouter
+from pydantic import BaseModel
+import subprocess
+
+router = APIRouter()
+
+class PingRequest(BaseModel):
+    target: str
+
+@router.post("/ping")
+def ping_host(req: PingRequest):
+    try:
+        output = subprocess.check_output(
+            ["ping", "-n", "2", req.target],
+            stderr=subprocess.STDOUT,
+            universal_newlines=True,
+            timeout=5
+        )
+        return {
+            "target": req.target,
+            "status": "reachable",
+            "output": output
+        }
+    except subprocess.CalledProcessError as e:
+        return {
+            "target": req.target,
+            "status": "unreachable",
+            "error": e.output
+        }
+    except Exception as e:
+        return {
+            "target": req.target,
+            "status": "error",
+            "error": str(e)
+        }
+
+
+-----
+
+c:\noc_project\UltraNOC\backend\tests\test_ping_tool.py:
+
+import requests
+
+def test_ping_simulation():
+    data = { "target": "192.0.2.1" }
+    response = requests.post("http://localhost:8000/api/v1/tools/ping", json=data)
+    assert response.status_code == 200
+    result = response.json()
+    assert result["target"] == "192.0.2.1"
+    assert result["status"] in ["reachable", "unreachable", "error"]
+    assert "output" in result or "message" in result or "error" in result
+
+
+-----
+
+c:\noc_project\UltraNOC\backend\app\routers\flow_archive.py:
+
+from fastapi import APIRouter
+from pydantic import BaseModel
+from typing import List
+from datetime import datetime
+import uuid
+import os
+import json
+
+router = APIRouter()
+
+ARCHIVE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../data/flow_archive.json"))
+flow_entries = []
+
+class FlowRecord(BaseModel):
+    id: str = None
+    src: str
+    dst: str
+    bandwidth_mbps: float
+    duration_s: int
+    timestamp: str = None
+
+def save_to_file():
+    os.makedirs(os.path.dirname(ARCHIVE_PATH), exist_ok=True)
+    with open(ARCHIVE_PATH, "w") as f:
+        json.dump([entry.dict() for entry in flow_entries], f, indent=2)
+
+@router.post("/add", response_model=FlowRecord)
+def add_flow(record: FlowRecord):
+    record.id = str(uuid.uuid4())
+    record.timestamp = datetime.utcnow().isoformat()
+    flow_entries.append(record)
+    save_to_file()
+    return record
+
+@router.get("/list", response_model=List[FlowRecord])
+def list_flows():
+    return flow_entries
+
+@router.get("/flows")
+def get_flows():
+    if not os.path.exists(ARCHIVE_PATH):
+        return []
+    with open(ARCHIVE_PATH, "r") as f:
+        return json.load(f)
+
+
+-----
+
+c:\noc_project\UltraNOC\backend\app\routers\cli_playback.py:
+
+from fastapi import APIRouter
+from pydantic import BaseModel
+from datetime import datetime
+from typing import List
+import uuid
+
+router = APIRouter()
+
+# In-Memory CLI-Playback-Store (ersetzbar durch DB später)
+playback_store = {}
+
+class CLICommand(BaseModel):
+    session_id: str
+    command: str
+    timestamp: str = None
+
+@router.post("/record", response_model=dict)
+def record_command(entry: CLICommand):
+    entry.timestamp = datetime.utcnow().isoformat()
+    if entry.session_id not in playback_store:
+        playback_store[entry.session_id] = []
+    playback_store[entry.session_id].append(entry)
+    return { "status": "recorded", "session_id": entry.session_id }
+
+@router.get("/playback/{session_id}", response_model=List[CLICommand])
+def get_history(session_id: str):
+    return playback_store.get(session_id, [])
+
+
+-----
+
+c:\noc_project\UltraNOC\frontend\src\components\Widgets\ClockWidget.jsx:
+
+import React, { useEffect, useState } from "react";
+
+function ClockWidget() {
+  const [time, setTime] = useState(new Date());
+
+  useEffect(() => {
+    const interval = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="p-4 rounded-xl shadow bg-white text-center">
+      <h2 className="text-xl font-semibold">Systemzeit</h2>
+      <p className="text-2xl mt-2 font-mono">{time.toLocaleTimeString()}</p>
+    </div>
+  );
+}
+
+export default ClockWidget;
+
+
+-----
+
+c:\noc_project\UltraNOC\frontend\src\components\Dashboard.jsx:
+
+import React from "react";
+import ClockWidget from "./Widgets/ClockWidget";
+
+const Dashboard = () => {
+  return (
+    <div className="min-h-screen bg-gray-900 text-white p-8">
+      <h1 className="text-3xl font-bold mb-6">Welcome to UltraNOC</h1>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <ClockWidget />
+        {/* Hier kannst du weitere Widgets hinzufügen */}
+      </div>
+    </div>
+  );
+};
+
+export default Dashboard;
+
+
+-----
+
+c:\noc_project\UltraNOC\frontend\src\App.jsx:
+
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Login from "./pages/Login";
+import Dashboard from "./components/Dashboard";
+import ProtectedRoute from "./components/ProtectedRoute";
+
+const App = () => {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="*" element={<Login />} />
+      </Routes>
+    </Router>
+  );
+};
+
+export default App;
+
+
+-----
+
+c:\noc_project\UltraNOC\frontend\src\main.jsx:
+
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
+import "./index.css";
+
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+
+
+-----
+
+c:\noc_project\UltraNOC\frontend\vite.config.js:
+
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+
+export default defineConfig({
+  plugins: [react()],
+  resolve: {
+    alias: {
+      '@': '/src',
+    },
+  },
+});
+
+
+-----
+
+c:\noc_project\UltraNOC\frontend\tailwind.config.js:
+
+module.exports = {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,jsx,ts,tsx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        nocblue: '#0b5ed7',
+        nocgray: '#1f1f1f'
+      },
+      borderRadius: {
+        '2xl': '1rem'
+      }
+    },
+  },
+  plugins: [],
+}
+
+
+-----
+
+c:\noc_project\UltraNOC\frontend\src\index.css:
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+
+-----
+
+c:\noc_project\UltraNOC\frontend\postcss.config.js:
+
+// frontend/postcss.config.js
+module.exports = {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+}
+
+
+-----
+

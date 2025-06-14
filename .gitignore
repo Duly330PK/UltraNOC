@@ -8,3 +8,7 @@ venv/
 
 # Node modules (Frontend-Abhängigkeiten)
 node_modules/
+
+# Pytest Cache ignorieren
+.pytest_cache/
+backend/.pytest_cache/

@@ -8,17 +8,24 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    const response = await fetch("http://localhost:8000/token", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({ username, password }),
-    });
-    const data = await response.json();
-    if (data.access_token) {
-      localStorage.setItem("token", data.access_token);
-      navigate("/dashboard");
-    } else {
-      alert("Login failed");
+    try {
+      const response = await fetch("http://localhost:8000/api/v1/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ username, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.access_token) {
+        localStorage.setItem("token", data.access_token);
+        navigate("/dashboard");
+      } else {
+        alert("Login fehlgeschlagen: " + (data.detail || "Unbekannter Fehler"));
+      }
+    } catch (err) {
+      console.error("Login Error:", err);
+      alert("Verbindung zum Server fehlgeschlagen");
     }
   };
 
@@ -31,6 +38,7 @@ const Login = () => {
           placeholder="Username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
+          autoComplete="username"
           className="w-full p-2 mb-4 rounded bg-gray-700"
         />
         <input
@@ -38,6 +46,7 @@ const Login = () => {
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          autoComplete="current-password"
           className="w-full p-2 mb-4 rounded bg-gray-700"
         />
         <button type="submit" className="w-full bg-blue-600 p-2 rounded font-bold hover:bg-blue-700">

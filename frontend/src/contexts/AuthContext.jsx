@@ -1,5 +1,6 @@
+// C:\noc_project\UltraNOC\frontend\src\contexts\AuthContext.jsx
+
 import React, { createContext, useState } from "react";
-import axios from "axios";
 
 export const AuthContext = createContext();
 
@@ -8,16 +9,24 @@ export function AuthProvider({ children }) {
 
   const login = async (username, password) => {
     try {
-      const res = await axios.post("http://localhost:8000/api/v1/auth/login", {
-        username,
-        password,
+      const response = await fetch("http://localhost:8000/api/v1/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ username, password }),
       });
-      const accessToken = res.data.access_token;
-      localStorage.setItem("token", accessToken);
-      setToken(accessToken);
-      return true;
+
+      const data = await response.json();
+
+      if (response.ok && data.access_token) {
+        localStorage.setItem("token", data.access_token);
+        setToken(data.access_token);
+        return true;
+      } else {
+        console.error("Login fehlgeschlagen:", data.detail || "Unbekannter Fehler");
+        return false;
+      }
     } catch (err) {
-      console.error("Login fehlgeschlagen:", err);
+      console.error("Login Error:", err);
       return false;
     }
   };
@@ -25,6 +34,7 @@ export function AuthProvider({ children }) {
   const logout = () => {
     localStorage.removeItem("token");
     setToken(null);
+    // Navigation erfolgt bewusst NICHT hier!
   };
 
   const isAuthenticated = !!token;

@@ -1,24 +1,23 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordRequestForm
-from sqlalchemy.orm import Session
-from app.schemas.auth_schemas import TokenResponse
-from app.models.auth_models import User
-from app.database import get_db
-from app.auth.token_handler import create_access_token
-from passlib.context import CryptContext
+# C:\noc_project\UltraNOC\backend\app\auth\token_handler.py
 
-router = APIRouter(prefix=apiv1auth, tags=[Authentication])
+from datetime import datetime, timedelta, timezone
+from jose import jwt
+from typing import Optional
 
-pwd_context = CryptContext(schemes=[bcrypt], deprecated=auto)
+# Achtung: In Produktivsystemen aus Umgebungsvariablen laden!
+SECRET_KEY = "ultranoc-secret"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
-@router.post(login, response_model=TokenResponse)
-def login(form_data OAuth2PasswordRequestForm = Depends(), db Session = Depends(get_db))
-    user = db.query(User).filter(User.username == form_data.username).first()
-    if not user or not pwd_context.verify(form_data.password, user.hashed_password)
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=Invalid credentials,
-            headers={WWW-Authenticate Bearer},
-        )
-    token = create_access_token(data={sub user.username})
-    return TokenResponse(access_token=token)
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+    to_encode = data.copy()
+    expire = datetime.now(timezone.utc) + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
+    to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+def decode_access_token(token: str):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload.get("sub")
+    except Exception:
+        return None
