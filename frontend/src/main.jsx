@@ -1,5 +1,3 @@
-// frontend/src/main.jsx
-
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
@@ -9,7 +7,7 @@ import { AuthProvider } from './contexts/AuthContext.jsx';
 import { TopologyProvider } from './contexts/TopologyContext.jsx';
 import { CommandMenuProvider } from './contexts/CommandMenuContext.jsx';
 import { ThemeProvider } from './contexts/ThemeContext.jsx';
-import { SandboxProvider } from './contexts/SandboxContext.jsx'; // NEU
+import { SandboxProvider } from './contexts/SandboxContext.jsx';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
@@ -17,11 +15,11 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <ThemeProvider>
         <AuthProvider>
           <TopologyProvider>
-            <SandboxProvider> {/* NEU */}
+            <SandboxProvider>
               <CommandMenuProvider>
                 <App />
               </CommandMenuProvider>
-            </SandboxProvider> {/* NEU */}
+            </SandboxProvider>
           </TopologyProvider>
         </AuthProvider>
       </ThemeProvider>

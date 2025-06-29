@@ -6,7 +6,7 @@ import { TopologyContext } from '../contexts/TopologyContext';
 import { SandboxContext } from '../contexts/SandboxContext';
 import ControlPanel from '../components/topology/ControlPanel';
 
-// Icon Fix & Styling
+// Leaflet Icon Fix für Vite/Parcel
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
@@ -28,7 +28,6 @@ const getStatusColor = (status) => {
 
 const getStatusStyle = (status) => getStatusColor(status);
 
-// Map Controller für Bounds etc.
 const MapController = ({ bounds }) => {
     const map = useMap();
     useEffect(() => {
@@ -50,6 +49,7 @@ const TopologyPage = ({ isSandbox = false }) => {
         setLinkSourceNode,
     } = sandbox || {};
 
+    // Sandbox: Neuen Knoten per Map-Click hinzufügen
     const handleMapClick = (e) => {
         if (isSandbox && sandboxMode === 'addNode') {
             const newId = `node-${Date.now()}`;
@@ -69,6 +69,7 @@ const TopologyPage = ({ isSandbox = false }) => {
         }
     };
 
+    // Sandbox: Link setzen oder Element selektieren
     const handleNodeClick = (e, feature) => {
         L.DomEvent.stopPropagation(e);
         if (isSandbox && sandboxMode === 'addLinkStart') {
@@ -158,6 +159,7 @@ const TopologyPage = ({ isSandbox = false }) => {
         });
     };
 
+    // MapEvents nur im Sandbox-Modus aktiv
     const MapEvents = () => {
         useMapEvents({ click: handleMapClick });
         return null;

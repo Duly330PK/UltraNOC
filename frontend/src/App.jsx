@@ -9,12 +9,10 @@ import IncidentsPage from './pages/IncidentsPage';
 import ForensicsPage from './pages/ForensicsPage';
 import Topology3DPage from './pages/Topology3DPage';
 import SandboxPage from './pages/SandboxPage';
+import DeviceListPage from './pages/DeviceListPage';
 import CommandMenu from './components/shared/CommandMenu';
 import { CommandMenuContext } from './contexts/CommandMenuContext';
 import { AuthContext } from './contexts/AuthContext';
-// NEU: Import der neuen Seite
-import DeviceListPage from './pages/DeviceListPage';
-
 
 function App() {
   const { toggleCommandMenu } = useContext(CommandMenuContext);
@@ -33,7 +31,6 @@ function App() {
     }
 
     document.addEventListener('keydown', handleKeyDown);
-    // Custom event listener to allow logout from anywhere in the app
     window.addEventListener('logout-request', handleLogout);
 
     return () => {
@@ -55,11 +52,8 @@ function App() {
           <Route path="incidents" element={<IncidentsPage />} />
           <Route path="incidents/:id" element={<IncidentsPage />} />
           <Route path="forensics" element={<ForensicsPage />} />
-          <Route path="sandbox" element={<SandboxPage />} />
-          
-          {/* NEU: Route für die Geräteliste */}
           <Route path="devices" element={<DeviceListPage />} />
-
+          <Route path="sandbox" element={<SandboxPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
