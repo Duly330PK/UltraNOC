@@ -1,0 +1,70 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [7.62, 51.96] },
+      "properties": {
+        "id": "core-router-1",
+        "label": "Core-Router 1",
+        "type": "Core Router",
+        "status": "online",
+        "details": {
+          "ip_address": "10.0.0.1",
+          "firmware": { "os": "UltraOS", "version": "2.1.3" },
+          "interfaces": [
+            { "name": "ge-0/0/1", "status": "up", "vlan": "trunk", "desc": "Uplink-ISP" },
+            { "name": "ge-0/0/2", "status": "up", "vlan": "trunk", "desc": "to:olt-1" }
+          ]
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [7.63, 51.95] },
+      "properties": {
+        "id": "olt-1",
+        "label": "OLT-Mitte-1",
+        "type": "OLT",
+        "status": "online",
+        "details": {
+          "active_onts": 1,
+          "firmware": { "os": "GPON-OS", "version": "5.4.1" }
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [7.64, 51.94] },
+      "properties": {
+        "id": "ont-1234",
+        "label": "ONT-DGF-1234",
+        "type": "ONT",
+        "status": "online",
+        "details": { "rx_power_dbm": -22.5 }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "LineString", "coordinates": [ [7.62, 51.96], [7.63, 51.95] ] },
+      "properties": {
+        "source": "core-router-1",
+        "target": "olt-1",
+        "type": "Fiber Link",
+        "status": "online",
+        "length_km": 1.2
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "LineString", "coordinates": [ [7.63, 51.95], [7.64, 51.94] ] },
+      "properties": {
+        "source": "olt-1",
+        "target": "ont-1234",
+        "type": "Fiber Link",
+        "status": "online",
+        "length_km": 0.8
+      }
+    }
+  ]
+}

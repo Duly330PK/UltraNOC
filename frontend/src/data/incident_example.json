@@ -1,0 +1,20 @@
+{
+  "id": 1,
+  "title": "Credential dumping via MimiKats",
+  "summary": "Professionally grow e-business web-readiness rather than technically sound metrics. Phosfluorescently foster high standards in schemas for business value.",
+  "status": "Pending",
+  "assignee": "Cole Bishop",
+  "metrics": {
+    "events": 195,
+    "attackers": "01",
+    "victims": "02",
+    "artifacts": 23,
+    "mitigations": "07",
+    "notes": "03"
+  },
+  "events": [
+    { "id": "03", "description": "Successfull SSH login", "time": "18:10" },
+    { "id": "04", "description": "Host-base firewall blocked", "time": "14:30" },
+    { "id": "09", "description": "Failed SSH login", "time": "18:20" }
+  ]
+}

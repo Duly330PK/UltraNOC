@@ -1,0 +1,62 @@
+# docker-compose.yml
+
+services:
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: ultranoc_nginx_proxy
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d:ro
+    depends_on:
+      - backend
+      - frontend
+
+  db:
+    image: postgres:15-alpine
+    container_name: ultranoc_db
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: ultranoc
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d ultranoc"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ultranoc_backend
+    ports:
+      - "8000" # Port wird nicht mehr nach außen freigegeben
+    volumes:
+      - ./backend:/app
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgresql://root:root@db/ultranoc
+      - SECRET_KEY=dein-super-geheimer-schluessel-fuer-jwt-tokens-der-sehr-lang-sein-sollte
+      - ALGORITHM=HS256
+      - ACCESS_TOKEN_EXPIRE_MINUTES=60
+      - LLM_API_URL=http://host.docker.internal:11434/api/generate
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: ultranoc_frontend
+    ports:
+      - "5173" # Port wird nicht mehr nach außen freigegeben
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:

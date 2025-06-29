@@ -1,0 +1,10 @@
+{
+    "name": "Insider-Bedrohung: Falsche Konfiguration",
+    "description": "Ein simulierter Techniker schaltet bei Wartungsarbeiten versehentlich einen wichtigen Uplink des Core-Routers ab, was zu einem Routing-Failover führen sollte. Nach kurzer Zeit wird der Fehler bemerkt und korrigiert.",
+    "steps": [
+        { "delay_s": 1, "action": "set_status", "target_id": "olt-1", "payload": {"status": "maintenance"} },
+        { "delay_s": 3, "action": "set_status", "target_id": "core-router-1", "payload": {"status": "offline"} },
+        { "delay_s": 10, "action": "set_status", "target_id": "core-router-1", "payload": {"status": "online"} },
+        { "delay_s": 2, "action": "set_status", "target_id": "olt-1", "payload": {"status": "online"} }
+    ]
+}

@@ -1,0 +1,8 @@
+{
+    "name": "DDoS-Angriff auf Core-Router",
+    "description": "Simuliert einen DDoS-Angriff, der die CPU-Last des Core-Routers erhöht und zu Paketverlust führt. Dies wird durch wiederholte Statusänderungen simuliert, die Alarme auslösen.",
+    "steps": [
+        { "delay_s": 2, "action": "set_status", "target_id": "core-router-1", "payload": {"status": "warning"} },
+        { "delay_s": 5, "action": "set_status", "target_id": "core-router-1", "payload": {"status": "critical"} }
+    ]
+}
