@@ -137,3 +137,46 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# ───── Python Bytecode ──────────────────────────────────────────────────────
+*.py[cod]
+__pycache__/
+*.so
+
+# ───── Virtualenv ───────────────────────────────────────────────────────────
+venv/
+.venv/
+
+# ───── Alembic Versions ─────────────────────────────────────────────────────
+alembic.ini
+migrations/
+
+# ───── Local DB / SQLite (falls testweise) ─────────────────────────────────
+*.db
+*.sqlite3
+
+# ───── VSCode, JetBrains, Editor & OS-Kram ─────────────────────────────────
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# ───── Docker Build Caches (optional) ──────────────────────────────────────
+**/.docker/
+*.tar
+*.img
+*.bak
+*.old
+
+# ───── Local Testing Output ────────────────────────────────────────────────
+htmlcov/
+.coverage
+*.cover
+.cache/
+.tox/
+.pytest_cache/
+nosetests.xml
+coverage.xml
+*.log
+log/
+logs/

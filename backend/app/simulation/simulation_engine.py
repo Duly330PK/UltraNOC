@@ -9,11 +9,11 @@ import uuid
 from datetime import datetime, timezone
 from app.simulation.connection_manager import ConnectionManager
 from app.simulation.threat_correlator import ThreatCorrelator
+from app.simulation.plugin_manager import PluginManager  # NEU
 from app.llm_gateway import generate_incident_summary
 from app.database import SessionLocal
 from app.models.cgnat_log import CGNATLog
 
-# NEU: Attack-Pattern als globale Konstante für Security Incidents
 ATTACK_PATTERNS = {
     "brute_force_ssh": {
         "sequence": [
@@ -23,18 +23,24 @@ ATTACK_PATTERNS = {
             "Account locked"
         ]
     }
-    # (Hier können weitere Pattern ergänzt werden)
 }
 
 class SimulationEngine:
     def __init__(self):
+        self.plugin_manager = PluginManager()  # NEU
         self.topology_data = self._load_json("app/data/full_topology.json")
-        self.simulation_state = self._load_json("app/data/state.json", default={"device_status": {}, "link_status": {}, "device_metrics": {}, "metrics_history": {}})
+        self.simulation_state = self._load_json("app/data/state.json", default={
+            "device_status": {}, "link_status": {}, "device_metrics": {}, "metrics_history": {}
+        })
         self.manager = ConnectionManager()
         self.background_tasks = set()
         self.threat_correlator = ThreatCorrelator()
         self.security_simulation_enabled = True
-        self.node_map = {node['properties']['id']: node for node in self.topology_data.get('features', []) if node.get('geometry', {}).get('type') == 'Point'}
+        self.node_map = {
+            node['properties']['id']: node
+            for node in self.topology_data.get('features', [])
+            if node.get('geometry', {}).get('type') == 'Point'
+        }
         self.graph = nx.Graph()
         self._build_network_graph()
         self._apply_initial_state()
@@ -49,12 +55,13 @@ class SimulationEngine:
 
     def get_node_by_id(self, node_id):
         return self.node_map.get(node_id)
-        
+
     def get_full_topology(self):
         for feature in self.topology_data.get('features', []):
             props = feature['properties']
             if 'id' in props:
-                props['status'] = self.simulation_state.get('device_status', {}).get(props['id'], props.get('status', 'unknown'))
+                props['status'] = self.simulation_state.get('device_status', {}).get(
+                    props['id'], props.get('status', 'unknown'))
         return self.topology_data
 
     def _build_network_graph(self):
@@ -110,14 +117,13 @@ class SimulationEngine:
                 cpu = round(random.uniform(base_cpu, base_cpu + 30), 1)
                 temp = round(random.uniform(40, 60), 1)
                 metrics = {"cpu": cpu, "temp": temp, "timestamp": datetime.now(timezone.utc).isoformat()}
-                
+
                 self.simulation_state['device_metrics'][props['id']] = metrics
                 history = self.simulation_state['metrics_history'].setdefault(props['id'], [])
                 history.append(metrics)
                 self.simulation_state['metrics_history'][props['id']] = history[-60:]
-                
                 metrics_update[props['id']] = {"current": metrics, "history": history[-60:]}
-        
+
         if metrics_update:
             await self._broadcast_update("metrics_update", metrics_update)
 
@@ -138,21 +144,22 @@ class SimulationEngine:
         finally:
             db.close()
 
-    # === ERSETZT: Security-Incidents Methode mit Pattern-Sequenz
     async def _simulate_security_incidents(self):
         if not self.security_simulation_enabled:
             return
 
         if random.random() < 0.1:
-            online_nodes = [n for n in self.node_map.values() if n['properties'].get('status') == 'online' and n['properties'].get('type') != 'Muffe']
+            online_nodes = [
+                n for n in self.node_map.values()
+                if n['properties'].get('status') == 'online' and n['properties'].get('type') != 'Muffe'
+            ]
             if not online_nodes:
                 return
 
             target_node = random.choice(online_nodes)
             target_node_id = target_node['properties']['id']
-
-            # KORREKTUR: Richtige Pattern-Logik
-            sequence = ATTACK_PATTERNS['brute_force_ssh']['sequence'] if random.random() < 0.2 else [random.choice(["Failed network login", "Firewall block"])]
+            sequence = ATTACK_PATTERNS['brute_force_ssh']['sequence'] if random.random() < 0.2 else [
+                random.choice(["Failed network login", "Firewall block"])]
 
             for event_type in sequence:
                 event = {
@@ -177,7 +184,7 @@ class SimulationEngine:
             if feature['geometry']['type'] == 'Point' and feature['properties']['status'] != 'online':
                 if active_graph.has_node(feature['properties']['id']):
                     active_graph.remove_node(feature['properties']['id'])
-        
+
         paths = {}
         core_node = "core-router-1"
         for node in self.topology_data['features']:
@@ -188,7 +195,7 @@ class SimulationEngine:
                         paths[node_id] = nx.shortest_path(active_graph, source=node_id, target=core_node, weight='weight')
                     except nx.NetworkXNoPath:
                         paths[node_id] = []
-        
+
         await self._broadcast_update("routing_update", {"paths": paths})
 
     async def update_device_status(self, device_id: str, new_status: str, actor: str = "System"):
@@ -205,28 +212,33 @@ class SimulationEngine:
             await self.update_device_status(device_id, "rebooting", actor)
             await asyncio.sleep(8)
             await self.update_device_status(device_id, "online", "System")
-        
+
         task = asyncio.create_task(_reboot())
         self.background_tasks.add(task)
         task.add_done_callback(self.background_tasks.discard)
 
     def get_cli_output(self, device_id: str, command: str) -> str:
         node = self.get_node_by_id(device_id)
-        if not node: return f"Error: Device {device_id} not found."
-        props = node['properties']
-        command = command.strip().lower()
+        if not node:
+            return f"Error: Device {device_id} not found."
+
+        template_id = node['properties'].get('template_id')
+        if not template_id:
+            return "Error: Unbekannter Gerätetyp ohne Plugin-Referenz."
+
+        template = self.plugin_manager.get_template(template_id)
+        if not template:
+            return f"Error: Kein Plugin für Template '{template_id}' gefunden."
+
+        command_output = template.get('cli_commands', {}).get(command.strip().lower())
+        if command_output:
+            return command_output
 
         if "show version" in command:
-            fw = props.get('details', {}).get('firmware', {})
-            return f"--- {props.get('label', device_id)} ---\nOS: {fw.get('os', 'N/A')}\nVersion: {fw.get('version', 'N/A')}"
-        if "show interface status" in command:
-            ifaces = props.get('details', {}).get('interfaces', [])
-            if not ifaces: return "No interfaces found."
-            header = f"{'Port':<12} | {'Status':<8} | {'VLAN':<8} | {'Description':<20}\n"
-            divider = f"{'-'*12}-+-{'-'*8}-+-{'-'*8}-+-{'-'*20}\n"
-            rows = [f"{p.get('name', ''):<12} | {p.get('status', 'down'):<8} | {p.get('vlan', 'trunk'):<8} | {p.get('desc', ''):<20}" for p in ifaces]
-            return header + divider + "\n".join(rows)
-        return f"Error: Unrecognized command '{command}'"
+            fw = node['properties'].get('details', {}).get('firmware', {})
+            return f"--- {node['properties'].get('label', device_id)} ---\nOS: {fw.get('os', 'N/A')}\nVersion: {fw.get('version', 'N/A')}"
+
+        return f"Error: Unrecognized command '{command}' on this device."
 
     async def reset_security_events(self):
         print("Setze Sicherheits-Events zurück...")

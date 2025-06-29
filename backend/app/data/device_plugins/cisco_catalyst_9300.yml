@@ -1,0 +1,12 @@
+id: cisco_catalyst_9300
+name: Cisco Catalyst 9300
+type: Aggregation-Switch
+vendor: Cisco
+os: IOS-XE
+details:
+  ports: 48
+  firmware:
+    version: "17.3.4a"
+cli_commands:
+  "show version": "Cisco IOS Software, C9300 Software (C9300-UNIVERSALK9-M), Version 17.3.4a, RELEASE SOFTWARE (fc2)"
+  "show vlan brief": "VLAN Name                             Status    Ports\\n---- -------------------------------- --------- -------------------------------\\n1    default                          active    Gi1/0/1, Gi1/0/2, Gi1/0/3..."

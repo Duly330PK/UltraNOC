@@ -1,0 +1,17 @@
+id: nokia_7360_olt
+name: Nokia 7360 ISAM FX
+type: OLT
+vendor: Nokia
+os: SR OS
+details:
+  ports:
+    - { name: "1/1/1", type: "XGS-PON", status: "up" }
+    - { name: "1/1/2", type: "XGS-PON", status: "up" }
+    - { name: "10GE-1/1", type: "Uplink", status: "up" }
+  firmware:
+    version: "21.10.R1"
+  optical_metrics:
+    max_onts: 256
+cli_commands:
+  "show pon 1/1/1 ont": "ONT-ID  Status   MAC                RX Power(dBm)\\n------  -------  -----------------  -------------\\n1       Active   e4:95:03:51:af:9f   -23.2"
+  "show system information": "System Type: 7360 ISAM FX-8\\nSoftware Version: SR OS 21.10.R1"
