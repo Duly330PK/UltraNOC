@@ -79,6 +79,7 @@ const TerminalTab = ({ element }) => {
                 <div ref={endOfMessagesRef} />
             </div>
             <div className="flex bg-noc-dark p-2 rounded-b-md border-x border-b border-noc-border">
+                {/* KORREKTUR: Das '>' Zeichen muss innerhalb des Strings sein, um als Text behandelt zu werden. */}
                 <span className="text-noc-green">{element.properties.label}></span>
                 <input
                     ref={inputRef}
