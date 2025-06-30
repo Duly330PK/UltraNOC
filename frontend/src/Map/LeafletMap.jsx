@@ -2,8 +2,8 @@ import React, { useContext, useEffect, useMemo } from 'react';
 import { MapContainer, TileLayer, GeoJSON, Tooltip, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { TopologyContext } from '@/contexts/TopologyContext';
-import { SandboxContext } from '@/contexts/SandboxContext';
+import { TopologyContext } from '../../contexts/TopologyContext';
+import { SandboxContext } from '../../contexts/SandboxContext';
 
 // Icon Fix und Farb-Logik
 delete L.Icon.Default.prototype._getIconUrl;
@@ -36,41 +36,23 @@ const LeafletMap = ({ isSandbox = false }) => {
     const { topology, setTopology, selectedElement, selectElement, mapBounds, tracedPath } = useContext(TopologyContext);
     const sandboxContext = useContext(SandboxContext);
 
-    // Event-Handler für Klicks auf die Karte (z.B. um Knoten hinzuzufügen)
-    const MapEvents = () => {
-        useMapEvents({
-            click(e) {
-                // KORREKTUR: Verhindert, dass der Klick "durchfällt" und sofort
-                // den neuen Knoten auslöst.
-                L.DomEvent.stopPropagation(e);
+    const handleMapClick = (e) => {
+        if (isSandbox && sandboxContext?.sandboxMode === 'addNode') {
+            const { nodeTypeToAdd, setSandboxMode, deviceTemplates } = sandboxContext;
+            const template = deviceTemplates.find(t => t.id === nodeTypeToAdd);
+            if (!template) return;
 
-                if (isSandbox && sandboxContext?.sandboxMode === 'addNode') {
-                    const { nodeTypeToAdd, setSandboxMode, deviceTemplates } = sandboxContext;
-                    const template = deviceTemplates.find(t => t.id === nodeTypeToAdd);
-                    if (!template) return;
-
-                    const newId = `${template.id}-${Date.now()}`;
-                    const newNode = {
-                        type: "Feature",
-                        geometry: { type: "Point", coordinates: [e.latlng.lng, e.latlng.lat] },
-                        properties: { 
-                            id: newId, 
-                            label: `Neues ${template.name}`, // Besserer Name aus dem Template
-                            type: template.type, 
-                            status: 'online', 
-                            details: template.details, // Übernehme Details aus dem Template
-                            template_id: template.id 
-                        }
-                    };
-                    setTopology(prev => ({ ...prev, features: [...prev.features, newNode] }));
-                    setSandboxMode('view');
-                }
-            },
-        });
-        return null;
+            const newId = `${template.id}-${Date.now()}`;
+            const newNode = {
+                type: "Feature",
+                geometry: { type: "Point", coordinates: [e.latlng.lng, e.latlng.lat] },
+                properties: { id: newId, label: `Neues ${template.name}`, type: template.type, status: 'online', details: template.details, template_id: template.id }
+            };
+            setTopology(prev => ({ ...prev, features: [...prev.features, newNode] }));
+            setSandboxMode('view');
+        }
     };
 
-    // Event-Handler für Klicks auf einen Knoten
     const handleNodeClick = (e, feature) => {
         L.DomEvent.stopPropagation(e);
         if (isSandbox && sandboxContext?.sandboxMode.startsWith('addLink')) {
@@ -93,25 +75,25 @@ const LeafletMap = ({ isSandbox = false }) => {
             selectElement(feature);
         }
     };
-
+    
     const onEachFeature = (feature, layer) => {
         if (feature.geometry.type === "Point") {
             layer.on({ click: (e) => handleNodeClick(e, feature) });
         } else {
-            layer.on({ click: (e) => { L.DomEvent.stopPropagation(e); selectElement(feature); } });
+             layer.on({ click: (e) => { L.DomEvent.stopPropagation(e); selectElement(feature); } });
         }
         if (feature.properties?.label) {
             layer.bindTooltip(`<b>${feature.properties.label}</b><br>${feature.properties.type}`);
         }
     };
-
+    
     const styleFeature = (feature) => {
         const props = feature.properties;
         const isSelected = selectedElement?.properties?.id === props.id || (selectedElement?.properties?.source === props.source && selectedElement?.properties?.target === props.target);
         let inPath = false;
         if (tracedPath && props.id) { inPath = tracedPath.includes(props.id); }
         if (tracedPath && props.source) {
-            for (let i = 0; i < tracedPath.length - 1; i++) {
+             for (let i = 0; i < tracedPath.length - 1; i++) {
                 if ((tracedPath[i] === props.source && tracedPath[i+1] === props.target) || (tracedPath[i] === props.target && tracedPath[i+1] === props.source)) {
                     inPath = true; break;
                 }
@@ -126,6 +108,11 @@ const LeafletMap = ({ isSandbox = false }) => {
     };
 
     const pointToLayer = (feature, latlng) => L.circleMarker(latlng, { ...styleFeature(feature), radius: 8 });
+
+    const MapEvents = () => {
+        useMapEvents({ click: handleMapClick });
+        return null;
+    };
 
     const memoizedGeoJSON = useMemo(() => (
         <GeoJSON data={topology} onEachFeature={onEachFeature} pointToLayer={pointToLayer} style={styleFeature} key={JSON.stringify(topology)} />
