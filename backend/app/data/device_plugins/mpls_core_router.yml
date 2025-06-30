@@ -1,0 +1,20 @@
+id: "cisco-asr-1000x"
+name: "MPLS Core Router"
+type: "MPLS Core Router"
+cli_commands:
+  show version: |
+    Cisco IOS XE Software, Version 17.3.2
+    Cisco ASR1006-X Router
+  show ip route summary: |
+    IP routing table name is default (0x0)
+    Route Source    Networks    Subnets     Replicates  Overhead    Memory (bytes)
+    connected       0           2           0           128         384
+    static          1           0           0           64          192
+    bgp 65000       150000      350000      0           32000000    96000000
+    internal        18          0           0           1152        3456
+    Total           150019      350002      0           32001344    96003032
+  show mpls forwarding-table: |
+    Local      Outgoing   Prefix           Bytes Label   Outgoing   Next Hop
+    Label      Label      or Tunnel Id     Switched      interface
+    16         Pop Label  10.0.0.1/32      0             Gi0/0/0    10.1.1.1
+    17         16         10.0.0.2/32      0             Gi0/0/1    10.1.1.2

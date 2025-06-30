@@ -1,0 +1,14 @@
+id: "cisco-catalyst-9300x"
+name: "Aggregation Switch"
+type: "Aggregation Switch"
+cli_commands:
+  show version: |
+    Cisco IOS XE Software, Version 17.6.3
+    Cisco Catalyst 9300X Switch
+  show vlan brief: |
+    VLAN Name                             Status    Ports
+    ---- -------------------------------- --------- -------------------------------
+    1    default                          active    
+    100  UPLINK_TRUNK                     active    Te1/1/1, Te1/1/2
+    200  CUSTOMER_AGG_A                   active    Gi1/0/1, Gi1/0/2, Gi1/0/3
+    300  CUSTOMER_AGG_B                   active    Gi1/0/4, Gi1/0/5, Gi1/0/6

@@ -1,0 +1,13 @@
+id: "generic-bng"
+name: "Broadband Network Gateway"
+type: "BNG"
+cli_commands:
+  show version: |
+    Junos OS 21.4R1
+    Model: mx204
+  show subscribers summary: |
+    Total Subscribers: 8192
+    PPPoE Sessions: 6144
+    DHCP Sessions: 2048
+  show system alarms: |
+    No alarms currently active.
