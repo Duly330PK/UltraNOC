@@ -3,13 +3,15 @@ import { TopologyContext } from '../../contexts/TopologyContext';
 import DetailsTab from './tabs/DetailsTab';
 import ActionsTab from './tabs/ActionsTab';
 import TerminalTab from './tabs/TerminalTab';
-import { Network, Server, Cpu, Cable, AlertCircle, Link as LinkIcon, X } from 'lucide-react';
+import { Network, Server, Cpu, Cable, AlertCircle, Link as LinkIcon, X, GitMerge } from 'lucide-react';
 
 const getIconForType = (type) => {
     if (!type) return <LinkIcon size={20} />;
     if (type.includes('Router')) return <Server size={20} />;
+    if (type.includes('Gateway')) return <Cpu size={20} />;
     if (type.includes('OLT')) return <Cpu size={20} />;
-    if (type.includes('Muffe')) return <Cable size={20} />;
+    if (type.includes('Switch')) return <GitMerge size={20} />;
+    if (type.includes('Muffe') || type.includes('Splitter')) return <Cable size={20} />;
     if (type.includes('ONT')) return <Network size={20} />;
     return <AlertCircle size={20} />;
 };
@@ -22,7 +24,9 @@ const ControlPanel = () => {
         if (selectedElement) {
             const props = selectedElement.properties || {};
             const isLink = selectedElement.geometry?.type === 'LineString';
-            const isTerminalDisabled = isLink || props.type === 'Muffe';
+            const isPassive = props.is_passive || false;
+            const isTerminalDisabled = isLink || isPassive;
+            
             if (isTerminalDisabled && activeTab === 'terminal') {
                 setActiveTab('details');
             }
@@ -44,13 +48,14 @@ const ControlPanel = () => {
 
     const props = selectedElement.properties;
     const isLink = selectedElement.geometry.type === 'LineString';
+    const isPassive = props.is_passive || false;
     const title = isLink ? `Link: ${props.source} → ${props.target}` : props.label;
     const type = isLink ? props.type : props.type;
 
     const tabs = [
         { id: 'details', label: 'Details' },
         { id: 'actions', label: 'Aktionen', disabled: isLink },
-        { id: 'terminal', label: 'Terminal', disabled: isLink || props.type === 'Muffe' }
+        { id: 'terminal', label: 'Terminal', disabled: isLink || isPassive }
     ];
 
     return (

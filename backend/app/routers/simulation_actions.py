@@ -2,15 +2,16 @@
 
 from fastapi import APIRouter, HTTPException, BackgroundTasks, Depends, Request
 from pydantic import BaseModel
-from app.auth.auth_bearer import get_current_user
+from app.auth.auth_bearer import get_current_user, require_role
 from app.models.user import User
+import asyncio
 
 router = APIRouter()
 
 class TogglePayload(BaseModel):
     enabled: bool
 
-@router.post("/security/toggle", status_code=200)
+@router.post("/security/toggle", status_code=200, dependencies=[Depends(require_role("admin"))])
 async def toggle_security_simulation(payload: TogglePayload, request: Request, user: User = Depends(get_current_user)):
     """Schaltet die Generierung von Sicherheits-Events an oder aus."""
     sim_engine = request.app.state.sim_engine
@@ -19,17 +20,16 @@ async def toggle_security_simulation(payload: TogglePayload, request: Request, u
     print(f"Sicherheits-Simulation durch '{user.username}' {status}.")
     return {"message": f"Sicherheits-Event-Generierung wurde {status}."}
 
-@router.post("/security/reset", status_code=202)
-async def reset_security_simulation(request: Request, user: User = Depends(get_current_user)):
+@router.post("/security/reset", status_code=202, dependencies=[Depends(require_role("admin"))])
+async def reset_security_simulation(request: Request, background_tasks: BackgroundTasks, user: User = Depends(get_current_user)):
     """Setzt alle Sicherheits-Events und Incidents zurück."""
     sim_engine = request.app.state.sim_engine
-    background_tasks = BackgroundTasks()
     background_tasks.add_task(sim_engine.reset_security_events)
     print(f"Reset der Sicherheits-Events durch '{user.username}' angestoßen.")
     return {"message": "Reset für Sicherheits-Events wurde gestartet."}
 
 
-@router.post("/devices/{device_id}/action", status_code=202)
+@router.post("/devices/{device_id}/action", status_code=200)
 async def perform_device_action(
     device_id: str,
     action: dict,
@@ -63,5 +63,14 @@ async def perform_device_action(
             raise HTTPException(status_code=400, detail="Command not provided")
         output = sim_engine.get_cli_output(device_id, command)
         return {"output": output}
+
+    elif action_type == "request_field_service":
+        node = sim_engine.get_node_by_id(device_id)
+        if not node or not node['properties'].get('is_passive', False):
+            raise HTTPException(status_code=400, detail="Field service can only be requested for passive devices.")
+        
+        await asyncio.sleep(5) # Simulate travel time
+        results = sim_engine.get_field_check_results(device_id)
+        return results
 
     raise HTTPException(status_code=400, detail="Invalid action type")

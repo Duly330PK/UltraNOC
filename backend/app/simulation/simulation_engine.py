@@ -9,7 +9,7 @@ import uuid
 from datetime import datetime, timezone
 from app.simulation.connection_manager import ConnectionManager
 from app.simulation.threat_correlator import ThreatCorrelator
-from app.simulation.plugin_manager import PluginManager  # NEU
+from app.simulation.plugin_manager import PluginManager
 from app.llm_gateway import generate_incident_summary
 from app.database import SessionLocal
 from app.models.cgnat_log import CGNATLog
@@ -27,8 +27,8 @@ ATTACK_PATTERNS = {
 
 class SimulationEngine:
     def __init__(self):
-        self.plugin_manager = PluginManager()  # NEU
-        self.topology_data = self._load_json("app/data/full_topology.json")
+        self.plugin_manager = PluginManager()
+        self.topology_data = self._load_json("app/data/live_network_topology.json")
         self.simulation_state = self._load_json("app/data/state.json", default={
             "device_status": {}, "link_status": {}, "device_metrics": {}, "metrics_history": {}
         })
@@ -41,7 +41,7 @@ class SimulationEngine:
             for node in self.topology_data.get('features', [])
             if node.get('geometry', {}).get('type') == 'Point'
         }
-        self.graph = nx.Graph()
+        self.graph = nx.DiGraph() # Use a directed graph for cascading failures
         self._build_network_graph()
         self._apply_initial_state()
 
@@ -71,8 +71,11 @@ class SimulationEngine:
         for feature in self.topology_data.get('features', []):
             if feature.get('geometry', {}).get('type') == 'LineString':
                 props = feature['properties']
-                if self.graph.has_node(props['source']) and self.graph.has_node(props['target']):
-                    self.graph.add_edge(props['source'], props['target'], weight=props.get('length_km', 1))
+                source, target = props['source'], props['target']
+                if self.graph.has_node(source) and self.graph.has_node(target):
+                    # Create directed edges from core towards customer
+                    self.graph.add_edge(source, target, weight=props.get('details', {}).get('length_km', 1))
+
 
     def _apply_initial_state(self):
         for feature in self.topology_data.get('features', []):
@@ -85,13 +88,6 @@ class SimulationEngine:
                     props['status'] = self.simulation_state['link_status'][link_id]
 
     async def save_state(self):
-        for feature in self.topology_data.get('features', []):
-            props = feature['properties']
-            if 'id' in props and 'status' in props:
-                self.simulation_state['device_status'][props['id']] = props['status']
-            if props.get('source'):
-                link_id = f"{props['source']}-{props['target']}"
-                self.simulation_state['link_status'][link_id] = props['status']
         async with aiofiles.open("app/data/state.json", "w", encoding="utf-8") as f:
             await f.write(json.dumps(self.simulation_state, indent=2))
         print("Simulationszustand erfolgreich gespeichert.")
@@ -110,19 +106,19 @@ class SimulationEngine:
 
     async def _simulate_live_metrics(self):
         metrics_update = {}
-        for node in self.node_map.values():
-            props = node['properties']
-            if props.get('status') == 'online' and props.get('type') != 'Muffe':
+        for node_id, node_data in self.node_map.items():
+            props = node_data['properties']
+            if props.get('status') == 'online' and not props.get('is_passive', False):
                 base_cpu = 15 if "Core" in props.get('type', '') else 5
                 cpu = round(random.uniform(base_cpu, base_cpu + 30), 1)
                 temp = round(random.uniform(40, 60), 1)
                 metrics = {"cpu": cpu, "temp": temp, "timestamp": datetime.now(timezone.utc).isoformat()}
 
-                self.simulation_state['device_metrics'][props['id']] = metrics
-                history = self.simulation_state['metrics_history'].setdefault(props['id'], [])
+                self.simulation_state['device_metrics'][node_id] = metrics
+                history = self.simulation_state['metrics_history'].setdefault(node_id, [])
                 history.append(metrics)
-                self.simulation_state['metrics_history'][props['id']] = history[-60:]
-                metrics_update[props['id']] = {"current": metrics, "history": history[-60:]}
+                self.simulation_state['metrics_history'][node_id] = history[-60:]
+                metrics_update[node_id] = {"current": metrics, "history": history[-60:]}
 
         if metrics_update:
             await self._broadcast_update("metrics_update", metrics_update)
@@ -147,70 +143,84 @@ class SimulationEngine:
     async def _simulate_security_incidents(self):
         if not self.security_simulation_enabled:
             return
+        if random.random() > 0.1:
+            return
+        
+        online_nodes = [
+            n for n in self.node_map.values()
+            if n['properties'].get('status') == 'online' and not n['properties'].get('is_passive', False)
+        ]
+        if not online_nodes:
+            return
 
-        if random.random() < 0.1:
-            online_nodes = [
-                n for n in self.node_map.values()
-                if n['properties'].get('status') == 'online' and n['properties'].get('type') != 'Muffe'
-            ]
-            if not online_nodes:
-                return
+        target_node = random.choice(online_nodes)
+        target_node_id = target_node['properties']['id']
+        sequence = ATTACK_PATTERNS['brute_force_ssh']['sequence'] if random.random() < 0.2 else [
+            random.choice(["Failed network login", "Firewall block"])]
 
-            target_node = random.choice(online_nodes)
-            target_node_id = target_node['properties']['id']
-            sequence = ATTACK_PATTERNS['brute_force_ssh']['sequence'] if random.random() < 0.2 else [
-                random.choice(["Failed network login", "Firewall block"])]
+        for event_type in sequence:
+            event = {
+                "id": f"evt-{uuid.uuid4()}",
+                "target_node_id": target_node_id,
+                "type": event_type,
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "description": f"{event_type} on {target_node_id} from IP 103.42.5.11"
+            }
+            new_incident_info = self.threat_correlator.add_event(event)
+            if new_incident_info:
+                summary = await generate_incident_summary(new_incident_info.pop('events'))
+                new_incident_info['summary'] = summary
+                await self._broadcast_update("new_incident", new_incident_info)
 
-            for event_type in sequence:
-                event = {
-                    "id": f"evt-{uuid.uuid4()}",
-                    "target_node_id": target_node_id,
-                    "type": event_type,
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
-                    "description": f"{event_type} on {target_node_id} from IP 103.42.5.11"
-                }
-                new_incident_info = self.threat_correlator.add_event(event)
-                if new_incident_info:
-                    summary = await generate_incident_summary(new_incident_info.pop('events'))
-                    new_incident_info['summary'] = summary
-                    await self._broadcast_update("new_incident", new_incident_info)
-
-                await self._broadcast_update("security_event", event)
-                await asyncio.sleep(random.uniform(0.5, 1.5))
+            await self._broadcast_update("security_event", event)
+            await asyncio.sleep(random.uniform(0.5, 1.5))
 
     async def _recalculate_routing_and_broadcast(self):
-        active_graph = self.graph.copy()
-        for feature in self.topology_data['features']:
-            if feature['geometry']['type'] == 'Point' and feature['properties']['status'] != 'online':
-                if active_graph.has_node(feature['properties']['id']):
-                    active_graph.remove_node(feature['properties']['id'])
-
+        active_graph = self.graph.to_undirected()
+        for node_id, status in self.simulation_state.get('device_status', {}).items():
+            if status != 'online' and active_graph.has_node(node_id):
+                active_graph.remove_node(node_id)
+        
         paths = {}
-        core_node = "core-router-1"
-        for node in self.topology_data['features']:
-            if node['geometry']['type'] == 'Point' and node['properties'].get('type') == 'ONT' and node['properties']['status'] == 'online':
+        core_node = "core-router-berlin"
+        for node in self.node_map.values():
+            if node['properties'].get('type') == 'ONT' and self.simulation_state.get('device_status', {}).get(node['properties']['id']) == 'online':
                 node_id = node['properties']['id']
                 if active_graph.has_node(node_id) and active_graph.has_node(core_node):
                     try:
                         paths[node_id] = nx.shortest_path(active_graph, source=node_id, target=core_node, weight='weight')
                     except nx.NetworkXNoPath:
                         paths[node_id] = []
-
         await self._broadcast_update("routing_update", {"paths": paths})
 
-    async def update_device_status(self, device_id: str, new_status: str, actor: str = "System"):
+    async def update_device_status(self, device_id: str, new_status: str, actor: str = "System", is_cascaded: bool = False):
         node = self.get_node_by_id(device_id)
-        if node and node['properties']['status'] != new_status:
-            node['properties']['status'] = new_status
-            self.simulation_state['device_status'][device_id] = new_status
-            print(f"Status von {device_id} auf {new_status} geändert durch {actor}.")
-            await self._broadcast_update("node_update", {"id": device_id, "status": new_status})
-            await self._recalculate_routing_and_broadcast()
+        if not node or node['properties'].get('status') == new_status:
+            return
+
+        # Set the status for the current node
+        node['properties']['status'] = new_status
+        self.simulation_state['device_status'][device_id] = new_status
+        source_actor = "Cascaded" if is_cascaded else actor
+        print(f"Status von {device_id} auf {new_status} geändert durch {source_actor}.")
+        await self._broadcast_update("node_update", {"id": device_id, "status": new_status})
+
+        # If a device goes offline, all its descendants should also go offline.
+        if new_status in ['offline', 'rebooting']:
+            if self.graph.has_node(device_id):
+                descendants = nx.descendants(self.graph, device_id)
+                for descendant_id in descendants:
+                    # Use a task to avoid blocking the current update
+                    asyncio.create_task(self.update_device_status(descendant_id, new_status, actor, is_cascaded=True))
+        
+        await self._recalculate_routing_and_broadcast()
+
 
     async def reboot_device(self, device_id: str, actor: str):
         async def _reboot():
             await self.update_device_status(device_id, "rebooting", actor)
             await asyncio.sleep(8)
+            # Only bring this device back online, descendants are not affected by this final step
             await self.update_device_status(device_id, "online", "System")
 
         task = asyncio.create_task(_reboot())
@@ -221,14 +231,17 @@ class SimulationEngine:
         node = self.get_node_by_id(device_id)
         if not node:
             return f"Error: Device {device_id} not found."
+        
+        if node['properties'].get('is_passive', False):
+            return f"Error: {device_id} is a passive device. No CLI access available."
 
         template_id = node['properties'].get('template_id')
         if not template_id:
-            return "Error: Unbekannter Gerätetyp ohne Plugin-Referenz."
+            return "Error: Unknown device type without plugin reference."
 
         template = self.plugin_manager.get_template(template_id)
         if not template:
-            return f"Error: Kein Plugin für Template '{template_id}' gefunden."
+            return f"Error: No plugin for template '{template_id}' found."
 
         command_output = template.get('cli_commands', {}).get(command.strip().lower())
         if command_output:
@@ -239,6 +252,27 @@ class SimulationEngine:
             return f"--- {node['properties'].get('label', device_id)} ---\nOS: {fw.get('os', 'N/A')}\nVersion: {fw.get('version', 'N/A')}"
 
         return f"Error: Unrecognized command '{command}' on this device."
+
+    def get_field_check_results(self, device_id: str) -> dict:
+        node = self.get_node_by_id(device_id)
+        if not node or not node['properties'].get('is_passive', False):
+            return {"error": f"{device_id} is not a valid passive device."}
+
+        if random.random() < 0.1: # 10% chance of a simulated fault
+            result = {
+                "check_status": "Fault Detected",
+                "details": "High insertion loss on fiber 5 (green). Suspected bad splice.",
+                "measured_loss_db": round(random.uniform(0.3, 0.8), 2),
+                "recommendation": "Re-splice fiber or check connector for contamination."
+            }
+        else:
+            result = {
+                "check_status": "Nominal",
+                "details": "All fibers and connections within tolerance.",
+                "measured_loss_db": round(random.uniform(0.05, 0.2), 2),
+                "recommendation": "No action required."
+            }
+        return result
 
     async def reset_security_events(self):
         print("Setze Sicherheits-Events zurück...")
