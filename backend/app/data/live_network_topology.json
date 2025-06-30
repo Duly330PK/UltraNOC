@@ -1,0 +1,248 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [13.4050, 52.5200]
+            },
+            "properties": {
+                "id": "core-router-berlin",
+                "label": "Core Router Berlin",
+                "type": "MPLS Core Router",
+                "template_id": "cisco-asr-1000x",
+                "status": "online",
+                "details": {
+                    "manufacturer": "Cisco",
+                    "model": "ASR 1006-X",
+                    "firmware": "IOS XE 17.3.2",
+                    "ip_address": "198.51.100.1",
+                    "ipv6_address": "2001:db8:core::1",
+                    "ports": 4,
+                    "active_ports": 3,
+                    "bgp_peers": 5,
+                    "mpls_enabled": true
+                }
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [13.4100, 52.5150]
+            },
+            "properties": {
+                "id": "bng-berlin-1",
+                "label": "BNG Berlin 1",
+                "type": "Broadband Network Gateway",
+                "template_id": "generic-bng",
+                "status": "online",
+                "details": {
+                    "manufacturer": "Juniper",
+                    "model": "MX204",
+                    "firmware": "Junos OS 21.4R1",
+                    "ip_address": "198.51.100.2",
+                    "ipv6_address": "2001:db8:bng::1",
+                    "active_sessions": 8192,
+                    "max_sessions": 16384,
+                    "qos_profiles": ["Basic-100", "Business-500", "Premium-1000"]
+                }
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [13.4150, 52.5100]
+            },
+            "properties": {
+                "id": "agg-switch-berlin-1",
+                "label": "Aggregation Switch Berlin 1",
+                "type": "Aggregation Switch",
+                "template_id": "cisco-catalyst-9300x",
+                "status": "online",
+                "details": {
+                    "manufacturer": "Cisco",
+                    "model": "Catalyst 9300X",
+                    "firmware": "IOS XE 17.6.3",
+                    "ip_address": "192.0.2.1",
+                    "ipv6_address": "2001:db8:agg::1",
+                    "uplink_ports": 2,
+                    "downlink_ports": 24,
+                    "vlan_trunks": [100, 200, 300]
+                }
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [13.4200, 52.5050]
+            },
+            "properties": {
+                "id": "olt-berlin-1",
+                "label": "OLT Berlin-Mitte 1",
+                "type": "OLT",
+                "template_id": "nokia-isam-fx",
+                "status": "online",
+                "details": {
+                    "manufacturer": "Nokia",
+                    "model": "7360 ISAM FX-4",
+                    "firmware": "SR OS 23.3.R1",
+                    "ip_address": "192.0.2.10",
+                    "ipv6_address": "2001:db8:olt::1",
+                    "protocol": "XGS-PON",
+                    "max_clients": 256,
+                    "active_clients": 182
+                }
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [13.4250, 52.5000]
+            },
+            "properties": {
+                "id": "splitter-berlin-1",
+                "label": "Splitter 1:32",
+                "type": "Splitter",
+                "is_passive": true,
+                "status": "online",
+                "details": {
+                    "ratio": "1:32",
+                    "input_loss_db": 0.2,
+                    "output_loss_db": 15.5
+                }
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [13.4280, 52.4970]
+            },
+            "properties": {
+                "id": "muffe-berlin-1",
+                "label": "Muffe M-4711",
+                "type": "Muffe",
+                "is_passive": true,
+                "status": "online",
+                "details": {
+                    "manufacturer": "R&M",
+                    "model": "SYNO Gel Splice Closure",
+                    "capacity_fibers": 96,
+                    "used_fibers": 34
+                }
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [13.4310, 52.4940]
+            },
+            "properties": {
+                "id": "ont-dgf-1234",
+                "label": "ONT DGF-1234",
+                "type": "ONT",
+                "template_id": "huawei-echolife-hg8010h",
+                "status": "online",
+                "details": {
+                    "manufacturer": "Huawei",
+                    "model": "EchoLife HG8010H",
+                    "firmware": "V3R018C10S105",
+                    "ip_address": "100.64.10.1",
+                    "ipv6_address": "2001:db8:cpe::1234",
+                    "customer_id": "DGF-1234",
+                    "rx_power_dbm": -21.5
+                }
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "LineString",
+                "coordinates": [[13.4050, 52.5200], [13.4100, 52.5150]]
+            },
+            "properties": {
+                "source": "core-router-berlin",
+                "target": "bng-berlin-1",
+                "status": "online",
+                "type": "Backbone Link",
+                "details": { "cable_type": "G.654.E Backbone (288)", "length_km": 0.6, "speed_gbps": 400 }
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "LineString",
+                "coordinates": [[13.4100, 52.5150], [13.4150, 52.5100]]
+            },
+            "properties": {
+                "source": "bng-berlin-1",
+                "target": "agg-switch-berlin-1",
+                "status": "online",
+                "type": "Metro Ethernet Link",
+                "details": { "cable_type": "G.652.D (144)", "length_km": 0.6, "speed_gbps": 100 }
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "LineString",
+                "coordinates": [[13.4150, 52.5100], [13.4200, 52.5050]]
+            },
+            "properties": {
+                "source": "agg-switch-berlin-1",
+                "target": "olt-berlin-1",
+                "status": "online",
+                "type": "Aggregation Link",
+                "details": { "cable_type": "G.657.A1 (Zubringer)", "length_km": 0.6, "speed_gbps": 25, "vlan_id": 100 }
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "LineString",
+                "coordinates": [[13.4200, 52.5050], [13.4250, 52.5000]]
+            },
+            "properties": {
+                "source": "olt-berlin-1",
+                "target": "splitter-berlin-1",
+                "status": "online",
+                "type": "Distribution Link",
+                "details": { "cable_type": "G.657.A1 (Zubringer)", "length_km": 0.6 }
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "LineString",
+                "coordinates": [[13.4250, 52.5000], [13.4280, 52.4970]]
+            },
+            "properties": {
+                "source": "splitter-berlin-1",
+                "target": "muffe-berlin-1",
+                "status": "online",
+                "type": "Distribution Link",
+                "details": { "cable_type": "G.657.A2 (Drop)", "length_km": 0.3 }
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "LineString",
+                "coordinates": [[13.4280, 52.4970], [13.4310, 52.4940]]
+            },
+            "properties": {
+                "source": "muffe-berlin-1",
+                "target": "ont-dgf-1234",
+                "status": "online",
+                "type": "Last Mile Link",
+                "details": { "cable_type": "G.657.A2 (Drop)", "length_km": 0.3 }
+            }
+        }
+    ]
+}
