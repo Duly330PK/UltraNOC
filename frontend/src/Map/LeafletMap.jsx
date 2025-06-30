@@ -40,6 +40,10 @@ const LeafletMap = ({ isSandbox = false }) => {
     const MapEvents = () => {
         useMapEvents({
             click(e) {
+                // KORREKTUR: Verhindert, dass der Klick "durchfällt" und sofort
+                // den neuen Knoten auslöst.
+                L.DomEvent.stopPropagation(e);
+
                 if (isSandbox && sandboxContext?.sandboxMode === 'addNode') {
                     const { nodeTypeToAdd, setSandboxMode, deviceTemplates } = sandboxContext;
                     const template = deviceTemplates.find(t => t.id === nodeTypeToAdd);
