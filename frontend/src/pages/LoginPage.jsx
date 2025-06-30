@@ -27,8 +27,12 @@ const LoginPage = () => {
     }
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-noc-dark">
-            <div className="w-full max-w-sm p-8 space-y-8 bg-noc-light-dark rounded-lg shadow-lg border border-noc-border">
+        <div 
+            className="flex items-center justify-center min-h-screen bg-cover bg-center"
+            style={{ backgroundImage: 'url(/noc_background.jpg)' }}
+        >
+            <div className="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
+            <div className="relative w-full max-w-sm p-8 space-y-8 bg-noc-light-dark/80 rounded-lg shadow-2xl border border-noc-border">
                 <div className="text-center">
                     <img src="/logo.svg" alt="UltraNOC Logo" className="w-16 h-16 mx-auto mb-4" />
                     <h1 className="text-2xl font-bold text-noc-text">UltraNOC Login</h1>
@@ -45,7 +49,7 @@ const LoginPage = () => {
                             required
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
-                            className="w-full px-3 py-2 bg-noc-dark border border-noc-border rounded-md placeholder-noc-text-secondary focus:outline-none focus:ring-2 focus:ring-noc-blue"
+                            className="w-full px-3 py-2 bg-noc-dark border border-noc-border rounded-md text-noc-text placeholder-noc-text-secondary focus:outline-none focus:ring-2 focus:ring-noc-blue"
                             placeholder="Username"
                         />
                     </div>
@@ -59,7 +63,7 @@ const LoginPage = () => {
                             required
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="w-full px-3 py-2 bg-noc-dark border border-noc-border rounded-md placeholder-noc-text-secondary focus:outline-none focus:ring-2 focus:ring-noc-blue"
+                            className="w-full px-3 py-2 bg-noc-dark border border-noc-border rounded-md text-noc-text placeholder-noc-text-secondary focus:outline-none focus:ring-2 focus:ring-noc-blue"
                             placeholder="Password"
                         />
                     </div>

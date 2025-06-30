@@ -10,3 +10,4 @@ aiofiles
 networkx
 httpx
 python-multipart
+bcrypt==4.0.1

@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useCallback, useContext, useRef } from 'react';
+import React, { createContext, useState, useEffect, useCallback, useContext } from 'react';
 import { AuthContext } from './AuthContext';
 import L from 'leaflet';
 
@@ -15,7 +15,11 @@ export const TopologyProvider = ({ children }) => {
     const { isAuthenticated, token, logout } = useContext(AuthContext);
 
     const fetchTopology = useCallback(async () => {
-        if (!token) return;
+        // KORREKTUR: Führe den Fetch nur aus, wenn der Token wirklich vorhanden ist.
+        if (!token) {
+            console.log("Kein Token vorhanden, warte auf Login.");
+            return;
+        }
         try {
             const response = await fetch('/api/v1/topology/', {
                 headers: { 'Authorization': `Bearer ${token}` }
@@ -38,31 +42,34 @@ export const TopologyProvider = ({ children }) => {
         }
     }, [token, logout]);
 
-    // KORREKTUR: Robusteres useEffect für die WebSocket-Verbindung
+    useEffect(() => {
+        if (isAuthenticated) {
+            fetchTopology();
+        }
+    }, [isAuthenticated, fetchTopology]);
+
     useEffect(() => {
         if (!isAuthenticated) return;
-
-        fetchTopology();
 
         let socket;
         let reconnectTimer;
 
         const connectWebSocket = () => {
-            // Bestehende Verbindung schließen, falls vorhanden
+            const wsProtocol = window.location.protocol === 'https' ? 'wss' : 'ws';
+            const wsUrl = `${wsProtocol}://${window.location.host}/ws/live-updates`;
+            
             if (socket && (socket.readyState === WebSocket.OPEN || socket.readyState === WebSocket.CONNECTING)) {
-               socket.close();
+                socket.close();
             }
 
-            socket = new WebSocket(`ws://${window.location.host}/ws/live-updates`);
-            
+            socket = new WebSocket(wsUrl);
+
             socket.onopen = () => console.log("WebSocket-Verbindung geöffnet.");
-            
             socket.onclose = () => {
                 console.log("WebSocket-Verbindung geschlossen. Erneuter Verbindungsversuch in 5s.");
-                if(reconnectTimer) clearTimeout(reconnectTimer);
+                if (reconnectTimer) clearTimeout(reconnectTimer);
                 reconnectTimer = setTimeout(connectWebSocket, 5000);
             };
-            
             socket.onerror = (error) => console.error("WebSocket-Fehler: ", error);
 
             socket.onmessage = (event) => {
@@ -80,10 +87,10 @@ export const TopologyProvider = ({ children }) => {
                                 return f;
                             })
                         }));
-                        setSelectedElement(prev => (prev && prev.properties.id === payload.id ? {...prev, properties: {...prev.properties, status: payload.status}} : prev));
+                        setSelectedElement(prev => (prev && prev.properties.id === payload.id ? { ...prev, properties: { ...prev.properties, status: payload.status } } : prev));
                     }
                     if (type === 'link_update') {
-                       // Link-Update Logik hier (falls benötigt)
+                        // Link-Update Logik hier (falls benötigt)
                     }
                     if (type === 'metrics_update') {
                         setLiveMetrics(prev => ({
@@ -104,7 +111,7 @@ export const TopologyProvider = ({ children }) => {
                         setIncidents([]);
                         setSecurityEvents([]);
                     }
-                } catch(e) {
+                } catch (e) {
                     console.error("Fehler beim Verarbeiten der WebSocket-Nachricht:", e);
                 }
             };
@@ -112,18 +119,17 @@ export const TopologyProvider = ({ children }) => {
 
         connectWebSocket();
 
-        // Cleanup-Funktion, die beim Verlassen der Komponente aufgerufen wird
         return () => {
             console.log("Bereinige WebSocket-Effekt.");
             if (reconnectTimer) {
                 clearTimeout(reconnectTimer);
             }
             if (socket) {
-                socket.onclose = null; // Verhindert den onclose-Handler beim manuellen Schließen
+                socket.onclose = null;
                 socket.close();
             }
         };
-    }, [isAuthenticated, token]); // fetchTopology wurde entfernt, um Re-Renders zu reduzieren
+    }, [isAuthenticated]);
 
     const selectElement = (element, trace = false) => {
         setSelectedElement(element);
@@ -147,9 +153,9 @@ export const TopologyProvider = ({ children }) => {
     };
 
     const value = {
-        topology, liveMetrics, incidents, securityEvents,
-        selectedElement, tracedPath, selectElement, clearSelection,
-        traceAndShowOnMap, mapBounds
+        topology, setTopology, liveMetrics, incidents, securityEvents,
+        selectedElement, selectElement, clearSelection,
+        tracedPath, traceAndShowOnMap, mapBounds
     };
 
     return <TopologyContext.Provider value={value}>{children}</TopologyContext.Provider>;
