@@ -4,24 +4,20 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App.jsx';
 import './index.css';
 import { AuthProvider } from './contexts/AuthContext.jsx';
-import { TopologyProvider } from './contexts/TopologyContext.jsx';
 import { CommandMenuProvider } from './contexts/CommandMenuContext.jsx';
 import { ThemeProvider } from './contexts/ThemeContext.jsx';
-import { SandboxProvider } from './contexts/SandboxContext.jsx';
 
+// FIX: Only wrap with providers that DON'T make API calls on load.
+// TopologyProvider and SandboxProvider are moved into App.jsx
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
       <ThemeProvider>
-        <AuthProvider>
-          <TopologyProvider>
-            <SandboxProvider>
-              <CommandMenuProvider>
-                <App />
-              </CommandMenuProvider>
-            </SandboxProvider>
-          </TopologyProvider>
-        </AuthProvider>
+        <CommandMenuProvider>
+          <AuthProvider>
+            <App />
+          </AuthProvider>
+        </CommandMenuProvider>
       </ThemeProvider>
     </BrowserRouter>
   </React.StrictMode>

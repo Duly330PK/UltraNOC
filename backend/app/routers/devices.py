@@ -1,8 +1,10 @@
 # backend/app/routers/devices.py
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, HTTPException
 from typing import List, Optional
 from pydantic import BaseModel
+from app.auth.auth_bearer import get_current_user
+from app.models.user import User
 
 class Device(BaseModel):
     id: str
@@ -16,7 +18,8 @@ class DeviceResponse(BaseModel):
 
 router = APIRouter()
 
-@router.get("/", response_model=DeviceResponse)
+# Add explicit dependency to ensure user is authenticated
+@router.get("/", response_model=DeviceResponse, dependencies=[Depends(get_current_user)])
 def get_device_list(
     request: Request,
     skip: int = 0,
@@ -25,11 +28,10 @@ def get_device_list(
 ):
     sim_engine = request.app.state.sim_engine
     all_nodes = list(sim_engine.node_map.values())
-    
-    # Filter nodes that have the necessary properties to be considered a device
+
     valid_devices = [
         node for node in all_nodes 
-        if 'id' in node.get('properties', {}) and 'label' in node.get('properties', {}) and 'type' in node.get('properties', {})
+        if 'id' in node.get('properties', {}) and 'type' in node.get('properties', {})
     ]
 
     if search:
@@ -37,7 +39,7 @@ def get_device_list(
         filtered_nodes = [
             node for node in valid_devices 
             if search in node['properties']['id'].lower() or \
-               search in node['properties']['label'].lower() or \
+               search in node['properties'].get('label', '').lower() or \
                search in node['properties']['type'].lower()
         ]
     else:
@@ -49,7 +51,7 @@ def get_device_list(
     devices_for_response = [
         Device(
             id=node['properties']['id'],
-            label=node['properties']['label'],
+            label=node['properties'].get('label', 'N/A'),
             type=node['properties']['type'],
             status=node['properties'].get('status', 'unknown')
         ) for node in paginated_nodes

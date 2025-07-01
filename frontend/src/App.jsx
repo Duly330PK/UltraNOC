@@ -7,12 +7,13 @@ import DashboardPage from './pages/DashboardPage';
 import TopologyPage from './pages/TopologyPage';
 import IncidentsPage from './pages/IncidentsPage';
 import ForensicsPage from './pages/ForensicsPage';
-import Topology3DPage from './pages/Topology3DPage';
 import SandboxPage from './pages/SandboxPage';
 import DeviceListPage from './pages/DeviceListPage';
 import CommandMenu from './components/shared/CommandMenu';
 import { CommandMenuContext } from './contexts/CommandMenuContext';
 import { AuthContext } from './contexts/AuthContext';
+import { TopologyProvider } from './contexts/TopologyContext';
+import { SandboxProvider } from './contexts/SandboxContext';
 
 function App() {
   const { toggleCommandMenu } = useContext(CommandMenuContext);
@@ -25,32 +26,36 @@ function App() {
         toggleCommandMenu();
       }
     };
-
-    const handleLogout = () => {
-      logout();
-    }
-
+    const handleLogout = () => logout();
     document.addEventListener('keydown', handleKeyDown);
     window.addEventListener('logout-request', handleLogout);
-
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('logout-request', handleLogout);
     };
   }, [toggleCommandMenu, logout]);
 
+  // FIX: This component wraps the entire authenticated experience.
+  // It ensures that TopologyProvider and SandboxProvider are only mounted
+  // AFTER authentication is confirmed by ProtectedRoute.
+  const AuthenticatedLayout = () => (
+    <TopologyProvider>
+      <SandboxProvider>
+        <Layout />
+      </SandboxProvider>
+    </TopologyProvider>
+  );
+
   return (
     <>
       <CommandMenu />
       <Routes>
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+        <Route path="/" element={<ProtectedRoute><AuthenticatedLayout /></ProtectedRoute>}>
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="topology" element={<TopologyPage />} />
-          <Route path="topology-3d" element={<Topology3DPage />} />
           <Route path="incidents" element={<IncidentsPage />} />
-          <Route path="incidents/:id" element={<IncidentsPage />} />
           <Route path="forensics" element={<ForensicsPage />} />
           <Route path="devices" element={<DeviceListPage />} />
           <Route path="sandbox" element={<SandboxPage />} />
