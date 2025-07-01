@@ -15,3 +15,14 @@
     border: 1px solid #30363d !important;
     color: #c9d1d9 !important;
 }
+
+/* New styles for the login page background */
+.login-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-image: url('https://images.pexels.com/photos/3861964/pexels-photo-3861964.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
+    background-size: cover;
+    background-position: center;
+}

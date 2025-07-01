@@ -6,27 +6,31 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
   "dependencies": {
-    "@react-three/drei": "^9.105.4",
-    "@react-three/fiber": "^8.16.2",
-    "cmdk": "^1.0.0",
+    "cmdk": "^0.2.0",
     "leaflet": "^1.9.4",
-    "lucide-react": "^0.378.0",
+    "lucide-react": "^0.279.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-force-graph": "1.44.3",
+    "react-force-graph-2d": "^1.25.3",
     "react-leaflet": "^4.2.1",
-    "react-router-dom": "^6.23.1",
-    "recharts": "^2.12.6",
-    "three": "^0.164.1"
+    "react-router-dom": "^6.16.0",
+    "recharts": "^2.9.0"
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "^4.2.1",
+    "@types/react": "^18.2.15",
+    "@types/react-dom": "^18.2.7",
+    "@vitejs/plugin-react": "^4.0.3",
     "autoprefixer": "^10.4.19",
-    "postcss": "^8.4.38",
-    "tailwindcss": "^3.4.3",
-    "vite": "^5.2.0"
+    "eslint": "^8.45.0",
+    "eslint-plugin-react": "^7.32.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.3",
+    "postcss": "^8.4.31",
+    "tailwindcss": "^3.3.3",
+    "vite": "^5.4.19"
   }
 }

@@ -27,12 +27,8 @@ const LoginPage = () => {
     }
 
     return (
-        <div 
-            className="flex items-center justify-center min-h-screen bg-cover bg-center"
-            style={{ backgroundImage: 'url(/noc_background.jpg)' }}
-        >
-            <div className="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
-            <div className="relative w-full max-w-sm p-8 space-y-8 bg-noc-light-dark/80 rounded-lg shadow-2xl border border-noc-border">
+        <div className="login-container">
+            <div className="w-full max-w-sm p-8 space-y-8 bg-noc-light-dark/80 backdrop-blur-sm rounded-lg shadow-2xl border border-noc-border">
                 <div className="text-center">
                     <img src="/logo.svg" alt="UltraNOC Logo" className="w-16 h-16 mx-auto mb-4" />
                     <h1 className="text-2xl font-bold text-noc-text">UltraNOC Login</h1>
