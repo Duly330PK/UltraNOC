@@ -6,15 +6,21 @@
             "geometry": {
                 "type": "Point",
                 "coordinates": [
-                    7.597391209209837,
-                    51.98582402629377
+                    13.405,
+                    52.52
                 ]
             },
             "properties": {
-                "id": "node-1751363869327",
-                "label": "Neues undefined",
+                "id": "core-router-berlin",
+                "label": "Core Router Berlin",
+                "type": "MPLS Core Router",
+                "template_id": "cisco-asr-1000x",
                 "status": "online",
-                "details": {}
+                "details": {
+                    "manufacturer": "Cisco",
+                    "model": "ASR 1006-X",
+                    "ip_address": "198.51.100.1"
+                }
             }
         },
         {
@@ -22,17 +28,43 @@
             "geometry": {
                 "type": "Point",
                 "coordinates": [
-                    13.306851529671736,
-                    52.585309012834415
+                    13.41,
+                    52.515
                 ]
             },
             "properties": {
-                "id": "node-1751367169646",
-                "label": "New Aggregation Switch",
+                "id": "bng-berlin-1",
+                "label": "BNG Berlin 1",
+                "type": "Broadband Network Gateway",
+                "template_id": "generic-bng",
+                "status": "online",
+                "details": {
+                    "manufacturer": "Juniper",
+                    "model": "MX204",
+                    "ip_address": "198.51.100.2"
+                }
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    13.415,
+                    52.51
+                ]
+            },
+            "properties": {
+                "id": "agg-switch-berlin-1",
+                "label": "Aggregation Switch Berlin 1",
                 "type": "Aggregation Switch",
                 "template_id": "cisco-catalyst-9300x",
                 "status": "online",
-                "details": {}
+                "details": {
+                    "manufacturer": "Cisco",
+                    "model": "Catalyst 9300X",
+                    "ip_address": "192.0.2.1"
+                }
             }
         },
         {
@@ -40,17 +72,21 @@
             "geometry": {
                 "type": "Point",
                 "coordinates": [
-                    13.306975928389823,
-                    52.58234486818353
+                    13.42,
+                    52.505
                 ]
             },
             "properties": {
-                "id": "node-1751367176454",
-                "label": "New Broadband Network Gateway",
-                "type": "BNG",
-                "template_id": "generic-bng",
+                "id": "olt-berlin-1",
+                "label": "OLT Berlin-Mitte 1",
+                "type": "OLT",
+                "template_id": "nokia-isam-fx",
                 "status": "online",
-                "details": {}
+                "details": {
+                    "manufacturer": "Nokia",
+                    "model": "7360 ISAM FX-4",
+                    "ip_address": "192.0.2.10"
+                }
             }
         },
         {
@@ -58,12 +94,201 @@
             "geometry": {
                 "type": "Point",
                 "coordinates": [
-                    13.313820545073774,
-                    52.583924253707714
+                    13.425,
+                    52.5
                 ]
             },
             "properties": {
-                "id": "node-1751367340718",
+                "id": "splitter-berlin-1",
+                "label": "Splitter 1:32",
+                "type": "Splitter",
+                "is_passive": true,
+                "status": "online",
+                "details": {
+                    "ratio": "1:32"
+                }
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    13.428,
+                    52.497
+                ]
+            },
+            "properties": {
+                "id": "muffe-berlin-1",
+                "label": "Muffe M-4711",
+                "type": "Muffe",
+                "is_passive": true,
+                "status": "online",
+                "details": {
+                    "manufacturer": "R&M",
+                    "model": "SYNO Gel Splice Closure"
+                }
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    13.431,
+                    52.494
+                ]
+            },
+            "properties": {
+                "id": "ont-dgf-1234",
+                "label": "ONT DGF-1234",
+                "type": "ONT",
+                "template_id": "huawei-echolife-hg8010h",
+                "status": "online",
+                "details": {
+                    "manufacturer": "Huawei",
+                    "model": "EchoLife HG8010H",
+                    "customer_id": "DGF-1234"
+                }
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "LineString",
+                "coordinates": [
+                    [
+                        13.405,
+                        52.52
+                    ],
+                    [
+                        13.41,
+                        52.515
+                    ]
+                ]
+            },
+            "properties": {
+                "source": "core-router-berlin",
+                "target": "bng-berlin-1",
+                "status": "online"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "LineString",
+                "coordinates": [
+                    [
+                        13.41,
+                        52.515
+                    ],
+                    [
+                        13.415,
+                        52.51
+                    ]
+                ]
+            },
+            "properties": {
+                "source": "bng-berlin-1",
+                "target": "agg-switch-berlin-1",
+                "status": "online"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "LineString",
+                "coordinates": [
+                    [
+                        13.415,
+                        52.51
+                    ],
+                    [
+                        13.42,
+                        52.505
+                    ]
+                ]
+            },
+            "properties": {
+                "source": "agg-switch-berlin-1",
+                "target": "olt-berlin-1",
+                "status": "online"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "LineString",
+                "coordinates": [
+                    [
+                        13.42,
+                        52.505
+                    ],
+                    [
+                        13.425,
+                        52.5
+                    ]
+                ]
+            },
+            "properties": {
+                "source": "olt-berlin-1",
+                "target": "splitter-berlin-1",
+                "status": "online"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "LineString",
+                "coordinates": [
+                    [
+                        13.425,
+                        52.5
+                    ],
+                    [
+                        13.428,
+                        52.497
+                    ]
+                ]
+            },
+            "properties": {
+                "source": "splitter-berlin-1",
+                "target": "muffe-berlin-1",
+                "status": "online"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "LineString",
+                "coordinates": [
+                    [
+                        13.428,
+                        52.497
+                    ],
+                    [
+                        13.431,
+                        52.494
+                    ]
+                ]
+            },
+            "properties": {
+                "source": "muffe-berlin-1",
+                "target": "ont-dgf-1234",
+                "status": "online"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    13.391390977752852,
+                    52.51564097603966
+                ]
+            },
+            "properties": {
+                "id": "node-1751369242822",
                 "label": "New Nokia 7360 ISAM FX",
                 "type": "OLT",
                 "template_id": "nokia_7360_olt",

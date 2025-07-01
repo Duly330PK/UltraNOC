@@ -24,32 +24,35 @@ def get_device_list(
     search: Optional[str] = None
 ):
     sim_engine = request.app.state.sim_engine
-    
     all_nodes = list(sim_engine.node_map.values())
     
+    # Filter nodes that have the necessary properties to be considered a device
+    valid_devices = [
+        node for node in all_nodes 
+        if 'id' in node.get('properties', {}) and 'label' in node.get('properties', {}) and 'type' in node.get('properties', {})
+    ]
+
     if search:
         search = search.lower()
         filtered_nodes = [
-            node for node in all_nodes 
-            if search in node['properties'].get('id', '').lower() or \
-               search in node['properties'].get('label', '').lower() or \
-               search in node['properties'].get('type', '').lower()
+            node for node in valid_devices 
+            if search in node['properties']['id'].lower() or \
+               search in node['properties']['label'].lower() or \
+               search in node['properties']['type'].lower()
         ]
     else:
-        filtered_nodes = all_nodes
+        filtered_nodes = valid_devices
 
     total_count = len(filtered_nodes)
-    
     paginated_nodes = filtered_nodes[skip : skip + limit]
     
-    devices_for_response = []
-    for node in paginated_nodes:
-        props = node['properties']
-        devices_for_response.append(Device(
-            id=props.get('id'),
-            label=props.get('label'),
-            type=props.get('type'),
-            status=sim_engine.simulation_state.get('device_status', {}).get(props.get('id'), 'unknown')
-        ))
+    devices_for_response = [
+        Device(
+            id=node['properties']['id'],
+            label=node['properties']['label'],
+            type=node['properties']['type'],
+            status=node['properties'].get('status', 'unknown')
+        ) for node in paginated_nodes
+    ]
         
     return DeviceResponse(total_count=total_count, devices=devices_for_response)

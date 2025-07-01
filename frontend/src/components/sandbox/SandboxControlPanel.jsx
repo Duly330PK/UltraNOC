@@ -33,8 +33,7 @@ const SandboxControlPanel = () => {
     
     const handleStartAddLink = () => {
         setSandboxMode('addLinkStart');
-        setLinkSourceNode(null); // Reset source node
-        alert('Modus "Verbindung hinzufügen" aktiv. Bitte Startknoten auf der Karte auswählen.');
+        setLinkSourceNode(null);
     };
 
     return (
@@ -55,6 +54,12 @@ const SandboxControlPanel = () => {
                     <GitPullRequest size={16}/> Verbindung
                 </button>
             </div>
+            
+            {sandboxMode.startsWith('addLink') && (
+                <div className="p-2 text-center bg-noc-blue/20 text-noc-blue rounded-md text-sm">
+                    {sandboxMode === 'addLinkStart' ? 'Startknoten auf der Karte wählen.' : 'Zielknoten auf der Karte wählen.'}
+                </div>
+            )}
 
             <div>
                 <label className="block text-sm text-noc-text-secondary mb-1">Gerätetyp für neue Knoten:</label>
