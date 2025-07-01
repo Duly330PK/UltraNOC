@@ -5,9 +5,9 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { TopologyContext } from '../contexts/TopologyContext';
 import { SandboxContext } from '../contexts/SandboxContext';
+import ControlPanel from '../components/topology/ControlPanel';
 import { Network, Server, Cpu, Cable, AlertCircle, GitMerge, Globe } from 'lucide-react';
 
-// --- Icon Logic ---
 const getIconForType = (type) => {
     if (!type) return <AlertCircle size={16} />;
     if (type.includes('MPLS Core Router')) return <Globe size={16} />;
@@ -18,6 +18,7 @@ const getIconForType = (type) => {
     if (type.includes('ONT')) return <Network size={16} />;
     return <AlertCircle size={16} />;
 };
+
 const getStatusColor = (status) => {
     switch (status) {
         case 'online': return '#3fb950';
@@ -26,6 +27,7 @@ const getStatusColor = (status) => {
         default: return '#8b949e';
     }
 };
+
 const createDeviceIcon = (type, status) => {
     const iconMarkup = renderToStaticMarkup(
         <div className="relative flex items-center justify-center w-8 h-8">
@@ -38,7 +40,6 @@ const createDeviceIcon = (type, status) => {
     return L.divIcon({ html: iconMarkup, className: 'custom-leaflet-icon', iconSize: [32, 32], iconAnchor: [16, 16] });
 };
 
-// --- Map Event Handler ---
 const MapEventsHandler = ({ isSandbox }) => {
     const { selectElement } = useContext(TopologyContext);
     const sandboxCtx = useContext(SandboxContext);
@@ -55,7 +56,6 @@ const MapEventsHandler = ({ isSandbox }) => {
     return null;
 };
 
-// --- Main Component ---
 const TopologyPage = ({ isSandbox = false }) => {
     const { topology, selectElement, selectedElement, mapRef } = useContext(TopologyContext);
     const sandboxCtx = useContext(SandboxContext);
@@ -64,7 +64,6 @@ const TopologyPage = ({ isSandbox = false }) => {
         layer.on('click', (e) => {
             L.DomEvent.stopPropagation(e);
             if (isSandbox && sandboxCtx) {
-                // **Verwendet jetzt den neuen Handler aus dem SandboxContext**
                 if (sandboxCtx.sandboxMode.startsWith('addLink')) {
                     sandboxCtx.handleLinkNodeClick(feature);
                 } else {
@@ -75,16 +74,22 @@ const TopologyPage = ({ isSandbox = false }) => {
             }
         });
     };
+    
+    const styleFeature = (feature) => {
+        const props = feature.properties || {};
+        const isSelected = selectedElement && selectedElement.properties && selectedElement.properties.id === props.id;
+        return {
+            color: getStatusColor(props.status),
+            weight: isSelected ? 5 : 3,
+            opacity: 0.9,
+        };
+    };
 
-    const styleFeature = (feature) => ({
-        color: getStatusColor(feature.properties.status),
-        weight: selectedElement?.properties.id === feature.properties.id ? 5 : 3,
-        opacity: 0.9
-    });
-
-    const pointToLayer = (feature, latlng) => L.marker(latlng, {
-        icon: createDeviceIcon(feature.properties.type, feature.properties.status)
-    });
+    const pointToLayer = (feature, latlng) => {
+        return L.marker(latlng, {
+            icon: createDeviceIcon(feature.properties.type, feature.properties.status)
+        });
+    };
 
     return (
         <MapContainer ref={mapRef} center={[52.51, 13.42]} zoom={12} style={{ height: '100%', width: '100%' }}>

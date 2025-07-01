@@ -1,4 +1,95 @@
 {
     "type": "FeatureCollection",
-    "features": []
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    13.294148762496164,
+                    52.57383225882682
+                ]
+            },
+            "properties": {
+                "id": "node-1751374459357",
+                "label": "New Aggregation Switch",
+                "type": "Aggregation Switch",
+                "template_id": "cisco-catalyst-9300x",
+                "status": "online",
+                "details": {}
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    13.31406120833893,
+                    52.56089122430358
+                ]
+            },
+            "properties": {
+                "id": "node-1751374462813",
+                "label": "New Broadband Network Gateway",
+                "type": "BNG",
+                "template_id": "generic-bng",
+                "status": "online",
+                "details": {}
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    13.340153378753643,
+                    52.54335211801131
+                ]
+            },
+            "properties": {
+                "id": "node-1751374466277",
+                "label": "New Cisco Catalyst 9300",
+                "type": "Aggregation-Switch",
+                "template_id": "cisco_catalyst_9300",
+                "status": "online",
+                "details": {}
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    13.336716550587383,
+                    52.53678882467535
+                ]
+            },
+            "properties": {
+                "id": "node-1751374471741",
+                "label": "New MPLS Core Router",
+                "type": "MPLS Core Router",
+                "template_id": "cisco-asr-1000x",
+                "status": "online",
+                "details": {}
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    13.325987862094491,
+                    52.53240229698671
+                ]
+            },
+            "properties": {
+                "id": "node-1751374476588",
+                "label": "New Nokia 7360 ISAM FX",
+                "type": "OLT",
+                "template_id": "nokia_7360_olt",
+                "status": "online",
+                "details": {}
+            }
+        }
+    ]
 }

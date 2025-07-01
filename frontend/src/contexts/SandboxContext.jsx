@@ -23,8 +23,8 @@ export const SandboxProvider = ({ children }) => {
                 }
             } catch (error) { console.error("Failed to load device templates:", error); }
         };
-        fetchDeviceTemplates();
-    }, []);
+        if(children) fetchDeviceTemplates(); // Only fetch if context is actually used
+    }, [children]);
 
     const addNode = (latlng) => {
         const selectedTemplate = deviceTemplates.find(t => t.id === nodeTypeToAdd) || { name: 'Device', type: 'Generic' };
@@ -40,7 +40,7 @@ export const SandboxProvider = ({ children }) => {
                 details: {}
             }
         };
-        setTopology(prev => ({ ...prev, features: [...prev.features, newNode] }));
+        setTopology(prev => ({ ...prev, features: [...(prev.features || []), newNode] }));
         setSandboxMode('view');
     };
 
@@ -56,7 +56,7 @@ export const SandboxProvider = ({ children }) => {
                     geometry: { type: "LineString", coordinates: [ linkSourceNode.geometry.coordinates, targetNode.geometry.coordinates ] },
                     properties: { source: linkSourceNode.properties.id, target: targetNode.properties.id, status: 'online', type: 'Fiber Link' }
                 };
-                setTopology(prev => ({ ...prev, features: [...prev.features, newLink] }));
+                setTopology(prev => ({ ...prev, features: [...(prev.features || []), newLink] }));
             }
             setSandboxMode('view');
             setLinkSourceNode(null);
