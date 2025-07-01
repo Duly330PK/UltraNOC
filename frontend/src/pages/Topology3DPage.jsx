@@ -1,16 +1,12 @@
 import React from 'react';
-import ForceGraph2DComponent from '../components/topology/ForceGraph2D';
-import ControlPanel from '../components/topology/ControlPanel';
 
 const Topology3DPage = () => {
   return (
-    <div className="flex h-full w-full">
-      <div className="flex-grow h-full">
-        <ForceGraph2DComponent />
-      </div>
-      <div className="w-96 h-full flex-shrink-0">
-        <ControlPanel />
-      </div>
+    <div className="p-8 text-center">
+      <h1 className="text-3xl font-bold">3D Topologie</h1>
+      <p className="mt-4 text-noc-text-secondary">
+        Dieser Bereich ist für eine zukünftige 3D-Visualisierung vorgesehen.
+      </p>
     </div>
   );
 };

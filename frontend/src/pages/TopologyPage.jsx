@@ -45,10 +45,10 @@ const MapEventsHandler = ({ isSandbox }) => {
 
     useMapEvents({
         click(e) {
-            if (isSandbox && sandboxCtx.sandboxMode === 'addNode') {
+            if (isSandbox && sandboxCtx?.sandboxMode === 'addNode') {
                 sandboxCtx.addNode(e.latlng);
             } else {
-                selectElement(null); // Deselect on map click in any other mode
+                selectElement(null);
             }
         },
     });
@@ -63,17 +63,19 @@ const TopologyPage = ({ isSandbox = false }) => {
     const onEachFeature = (feature, layer) => {
         layer.on('click', (e) => {
             L.DomEvent.stopPropagation(e);
-            if (isSandbox && (sandboxCtx.sandboxMode === 'addLinkStart' || sandboxCtx.sandboxMode === 'addLinkEnd')) {
-                sandboxCtx.setLinkSourceNode(feature);
-                if (sandboxCtx.sandboxMode === 'addLinkEnd') {
-                    sandboxCtx.addLink(feature);
+            if (isSandbox && sandboxCtx) {
+                // **Verwendet jetzt den neuen Handler aus dem SandboxContext**
+                if (sandboxCtx.sandboxMode.startsWith('addLink')) {
+                    sandboxCtx.handleLinkNodeClick(feature);
+                } else {
+                    selectElement(feature);
                 }
             } else {
                 selectElement(feature);
             }
         });
     };
-    
+
     const styleFeature = (feature) => ({
         color: getStatusColor(feature.properties.status),
         weight: selectedElement?.properties.id === feature.properties.id ? 5 : 3,

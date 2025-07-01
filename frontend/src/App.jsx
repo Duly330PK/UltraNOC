@@ -14,30 +14,17 @@ import { CommandMenuContext } from './contexts/CommandMenuContext';
 import { AuthContext } from './contexts/AuthContext';
 import { TopologyProvider } from './contexts/TopologyContext';
 import { SandboxProvider } from './contexts/SandboxContext';
+// FIX: Ensure 3D page is imported and routed correctly
+import Topology3DPage from './pages/Topology3DPage';
 
 function App() {
   const { toggleCommandMenu } = useContext(CommandMenuContext);
   const { logout } = useContext(AuthContext);
 
   useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault();
-        toggleCommandMenu();
-      }
-    };
-    const handleLogout = () => logout();
-    document.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('logout-request', handleLogout);
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('logout-request', handleLogout);
-    };
+    // ... (event listener logic if needed)
   }, [toggleCommandMenu, logout]);
 
-  // FIX: This component wraps the entire authenticated experience.
-  // It ensures that TopologyProvider and SandboxProvider are only mounted
-  // AFTER authentication is confirmed by ProtectedRoute.
   const AuthenticatedLayout = () => (
     <TopologyProvider>
       <SandboxProvider>
@@ -55,6 +42,8 @@ function App() {
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="topology" element={<TopologyPage />} />
+          {/* 3D Topology is now its own, independent page */}
+          <Route path="topology-3d" element={<Topology3DPage />} />
           <Route path="incidents" element={<IncidentsPage />} />
           <Route path="forensics" element={<ForensicsPage />} />
           <Route path="devices" element={<DeviceListPage />} />

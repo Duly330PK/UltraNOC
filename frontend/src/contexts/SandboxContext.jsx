@@ -4,7 +4,7 @@ import { TopologyContext } from './TopologyContext';
 export const SandboxContext = createContext();
 
 export const SandboxProvider = ({ children }) => {
-    const [sandboxMode, setSandboxMode] = useState('view'); // view, addNode, addLinkStart, addLinkEnd
+    const [sandboxMode, setSandboxMode] = useState('view');
     const [nodeTypeToAdd, setNodeTypeToAdd] = useState('');
     const [linkSourceNode, setLinkSourceNode] = useState(null);
     const [deviceTemplates, setDeviceTemplates] = useState([]);
@@ -15,17 +15,13 @@ export const SandboxProvider = ({ children }) => {
         const fetchDeviceTemplates = async () => {
             const token = localStorage.getItem('ultranoc_token');
             try {
-                const response = await fetch('/api/v1/topology/device-templates', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
+                const response = await fetch('/api/v1/topology/device-templates', { headers: { 'Authorization': `Bearer ${token}` } });
                 const data = await response.json();
                 setDeviceTemplates(data);
                 if (data.length > 0) {
                     setNodeTypeToAdd(data[0].id);
                 }
-            } catch (error) {
-                console.error("Failed to load device templates:", error);
-            }
+            } catch (error) { console.error("Failed to load device templates:", error); }
         };
         fetchDeviceTemplates();
     }, []);
@@ -48,16 +44,25 @@ export const SandboxProvider = ({ children }) => {
         setSandboxMode('view');
     };
 
-    const addLink = (targetNode) => {
-        if (!linkSourceNode || linkSourceNode.properties.id === targetNode.properties.id) return;
-        const newLink = {
-            type: "Feature",
-            geometry: { type: "LineString", coordinates: [ linkSourceNode.geometry.coordinates, targetNode.geometry.coordinates ] },
-            properties: { source: linkSourceNode.properties.id, target: targetNode.properties.id, status: 'online', type: 'Fiber Link' }
-        };
-        setTopology(prev => ({ ...prev, features: [...prev.features, newLink] }));
-        setSandboxMode('view');
-        setLinkSourceNode(null);
+    // FIX: Simplified logic to be more robust
+    const handleLinkNodeClick = (targetNode) => {
+        if (sandboxMode === 'addLinkStart') {
+            setLinkSourceNode(targetNode);
+            setSandboxMode('addLinkEnd');
+            alert(`Startknoten ${targetNode.properties.id} ausgewählt. Zielknoten wählen.`);
+        } else if (sandboxMode === 'addLinkEnd') {
+            if (linkSourceNode && linkSourceNode.properties.id !== targetNode.properties.id) {
+                const newLink = {
+                    type: "Feature",
+                    geometry: { type: "LineString", coordinates: [ linkSourceNode.geometry.coordinates, targetNode.geometry.coordinates ] },
+                    properties: { source: linkSourceNode.properties.id, target: targetNode.properties.id, status: 'online', type: 'Fiber Link' }
+                };
+                setTopology(prev => ({ ...prev, features: [...prev.features, newLink] }));
+            }
+            // Always reset after the second click
+            setSandboxMode('view');
+            setLinkSourceNode(null);
+        }
     };
 
     const value = {
@@ -65,12 +70,8 @@ export const SandboxProvider = ({ children }) => {
         nodeTypeToAdd, setNodeTypeToAdd,
         linkSourceNode, setLinkSourceNode,
         deviceTemplates,
-        addNode, addLink
+        addNode, handleLinkNodeClick
     };
 
-    return (
-        <SandboxContext.Provider value={value}>
-            {children}
-        </SandboxContext.Provider>
-    );
+    return <SandboxContext.Provider value={value}>{children}</SandboxContext.Provider>;
 };
