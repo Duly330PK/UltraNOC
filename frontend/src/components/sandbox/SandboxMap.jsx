@@ -1,13 +1,12 @@
-import React, { useContext } from 'react';
+import React, { useContext, useCallback } from 'react';
 import { MapContainer, TileLayer, GeoJSON, Marker, useMapEvents } from 'react-leaflet';
 import { renderToStaticMarkup } from 'react-dom/server';
 import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
-import { TopologyContext } from '../contexts/TopologyContext';
-import { SandboxContext } from '../contexts/SandboxContext';
+import { TopologyContext } from '../../contexts/TopologyContext';
+import { SandboxContext } from '../../contexts/SandboxContext';
 import { Network, Server, Cpu, Cable, AlertCircle, GitMerge, Globe } from 'lucide-react';
 
-// --- Icon Logic ---
+// --- Icon Logic (copied for encapsulation) ---
 const getIconForType = (type) => {
     if (!type) return <AlertCircle size={16} />;
     if (type.includes('MPLS Core Router')) return <Globe size={16} />;
@@ -18,6 +17,7 @@ const getIconForType = (type) => {
     if (type.includes('ONT')) return <Network size={16} />;
     return <AlertCircle size={16} />;
 };
+
 const getStatusColor = (status) => {
     switch (status) {
         case 'online': return '#3fb950';
@@ -26,6 +26,7 @@ const getStatusColor = (status) => {
         default: return '#8b949e';
     }
 };
+
 const createDeviceIcon = (type, status) => {
     const iconMarkup = renderToStaticMarkup(
         <div className="relative flex items-center justify-center w-8 h-8">
@@ -38,45 +39,45 @@ const createDeviceIcon = (type, status) => {
     return L.divIcon({ html: iconMarkup, className: 'custom-leaflet-icon', iconSize: [32, 32], iconAnchor: [16, 16] });
 };
 
-// --- Map Event Handler ---
-const MapEventsHandler = ({ isSandbox }) => {
+// --- Map Interaction Component ---
+const MapEventsController = () => {
+    const { addNode, addLink, sandboxMode, setSandboxMode } = useContext(SandboxContext);
     const { selectElement } = useContext(TopologyContext);
-    const sandboxCtx = useContext(SandboxContext);
 
     useMapEvents({
         click(e) {
-            if (isSandbox && sandboxCtx.sandboxMode === 'addNode') {
-                sandboxCtx.addNode(e.latlng);
+            if (sandboxMode === 'addNode') {
+                addNode(e.latlng);
             } else {
-                selectElement(null); // Deselect on map click in any other mode
+                selectElement(null); // Deselect on map click
             }
         },
     });
+
     return null;
 };
 
-// --- Main Component ---
-const TopologyPage = ({ isSandbox = false }) => {
-    const { topology, selectElement, selectedElement, mapRef } = useContext(TopologyContext);
-    const sandboxCtx = useContext(SandboxContext);
+
+const SandboxMap = () => {
+    const { topology, selectedElement, selectElement } = useContext(TopologyContext);
+    const { sandboxMode, handleNodeClickForLink } = useContext(SandboxContext);
 
     const onEachFeature = (feature, layer) => {
-        layer.on('click', (e) => {
-            L.DomEvent.stopPropagation(e);
-            if (isSandbox && (sandboxCtx.sandboxMode === 'addLinkStart' || sandboxCtx.sandboxMode === 'addLinkEnd')) {
-                sandboxCtx.setLinkSourceNode(feature);
-                if (sandboxCtx.sandboxMode === 'addLinkEnd') {
-                    sandboxCtx.addLink(feature);
+        if (feature.geometry.type === "Point") {
+            layer.on('click', (e) => {
+                L.DomEvent.stopPropagation(e);
+                if (sandboxMode === 'addLinkStart' || sandboxMode === 'addLinkEnd') {
+                    handleNodeClickForLink(feature);
+                } else {
+                    selectElement(feature);
                 }
-            } else {
-                selectElement(feature);
-            }
-        });
+            });
+        }
     };
     
     const styleFeature = (feature) => ({
         color: getStatusColor(feature.properties.status),
-        weight: selectedElement?.properties.id === feature.properties.id ? 5 : 3,
+        weight: 3,
         opacity: 0.9
     });
 
@@ -85,11 +86,11 @@ const TopologyPage = ({ isSandbox = false }) => {
     });
 
     return (
-        <MapContainer ref={mapRef} center={[52.51, 13.42]} zoom={12} style={{ height: '100%', width: '100%' }}>
-            <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" attribution='© CARTO' />
-            <MapEventsHandler isSandbox={isSandbox} />
+        <MapContainer center={[52.51, 13.42]} zoom={12} style={{ height: '100%', width: '100%' }}>
+            <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
+            <MapEventsController />
             <GeoJSON
-                key={JSON.stringify(topology) + JSON.stringify(selectedElement)}
+                key={JSON.stringify(topology)}
                 data={topology}
                 style={styleFeature}
                 onEachFeature={onEachFeature}
@@ -99,4 +100,4 @@ const TopologyPage = ({ isSandbox = false }) => {
     );
 };
 
-export default TopologyPage;
+export default SandboxMap;

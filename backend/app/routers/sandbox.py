@@ -1,28 +1,43 @@
-import yaml
-import os
-from fastapi import APIRouter, HTTPException
-from typing import List
+# backend/app/routers/sandbox.py
 
-router = APIRouter()
+import json
+import aiofiles
+from fastapi import APIRouter, Request, HTTPException, Depends
+from app.auth.auth_bearer import require_role
 
-PLUGIN_DIR = "app/data/device_plugins"
+router = APIRouter(dependencies=[Depends(require_role("admin"))])
 
-@router.get("/device-templates", response_model=List[dict])
-def get_device_templates():
-    """
-    Liest alle Geräte-Plugin-Dateien (.yml) aus dem Plugin-Verzeichnis,
-    parst sie und gibt sie als Liste an das Frontend zurück.
-    """
-    templates = []
-    if not os.path.exists(PLUGIN_DIR):
-        raise HTTPException(status_code=404, detail="Plugin-Verzeichnis nicht gefunden.")
+SANDBOX_TOPOLOGY_PATH = "app/data/sandbox_topology.json"
+
+@router.get("/load")
+async def load_sandbox_topology():
+    """Lädt die aktuelle Sandbox-Topologie."""
+    try:
+        async with aiofiles.open(SANDBOX_TOPOLOGY_PATH, "r", encoding="utf-8") as f:
+            content = await f.read()
+            return json.loads(content)
+    except FileNotFoundError:
+        # Erstellt eine leere Datei, wenn sie nicht existiert
+        async with aiofiles.open(SANDBOX_TOPOLOGY_PATH, "w", encoding="utf-8") as f:
+            await f.write(json.dumps({"type": "FeatureCollection", "features": []}))
+        return {"type": "FeatureCollection", "features": []}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Could not load sandbox topology: {e}")
+
+@router.post("/save")
+async def save_sandbox_topology(request: Request):
+    """Speichert die übermittelte Topologie in der Sandbox-Datei."""
+    try:
+        topology_data = await request.json()
+        async with aiofiles.open(SANDBOX_TOPOLOGY_PATH, "w", encoding="utf-8") as f:
+            await f.write(json.dumps(topology_data, indent=4))
         
-    for filename in os.listdir(PLUGIN_DIR):
-        if filename.endswith(".yml"):
-            try:
-                with open(os.path.join(PLUGIN_DIR, filename), 'r', encoding='utf-8') as f:
-                    template = yaml.safe_load(f)
-                    templates.append(template)
-            except Exception as e:
-                print(f"Fehler beim Laden des Plugins {filename}: {e}")
-    return templates
+        # Sim-Engine neu laden, um die Änderungen zu übernehmen
+        sim_engine = request.app.state.sim_engine
+        sim_engine.reload_topology(SANDBOX_TOPOLOGY_PATH)
+
+        return {"message": "Sandbox topology saved successfully."}
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=400, detail="Invalid JSON data provided.")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Could not save sandbox topology: {e}")

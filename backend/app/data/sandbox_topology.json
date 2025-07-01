@@ -1,0 +1,75 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    7.597391209209837,
+                    51.98582402629377
+                ]
+            },
+            "properties": {
+                "id": "node-1751363869327",
+                "label": "Neues undefined",
+                "status": "online",
+                "details": {}
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    13.306851529671736,
+                    52.585309012834415
+                ]
+            },
+            "properties": {
+                "id": "node-1751367169646",
+                "label": "New Aggregation Switch",
+                "type": "Aggregation Switch",
+                "template_id": "cisco-catalyst-9300x",
+                "status": "online",
+                "details": {}
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    13.306975928389823,
+                    52.58234486818353
+                ]
+            },
+            "properties": {
+                "id": "node-1751367176454",
+                "label": "New Broadband Network Gateway",
+                "type": "BNG",
+                "template_id": "generic-bng",
+                "status": "online",
+                "details": {}
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    13.313820545073774,
+                    52.583924253707714
+                ]
+            },
+            "properties": {
+                "id": "node-1751367340718",
+                "label": "New Nokia 7360 ISAM FX",
+                "type": "OLT",
+                "template_id": "nokia_7360_olt",
+                "status": "online",
+                "details": {}
+            }
+        }
+    ]
+}

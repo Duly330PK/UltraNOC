@@ -1,12 +1,8 @@
-// frontend/src/pages/DashboardPage.jsx
-
 import React, { useContext } from 'react';
 import { TopologyContext } from '../contexts/TopologyContext';
 import { AlertCircle, CheckCircle, ShieldAlert, Server, Cpu } from 'lucide-react';
 import ScenarioControl from '../components/dashboard/ScenarioControl';
-// NEU: Import der SecurityControl Komponente
 import SecurityControl from '../components/dashboard/SecurityControl';
-
 
 const StatCard = ({ label, value, color, icon }) => (
     <div className="bg-noc-light-dark p-6 rounded-lg border border-noc-border transition-all hover:border-noc-blue hover:shadow-lg">
@@ -21,13 +17,16 @@ const StatCard = ({ label, value, color, icon }) => (
 );
 
 const DashboardPage = () => {
-    const { incidents, securityEvents, topology, liveMetrics } = useContext(TopologyContext);
+    // FIX: Destructure with default values and add checks to prevent crashes
+    const { incidents = [], securityEvents = [], topology = {}, liveMetrics = {} } = useContext(TopologyContext);
 
-    const onlineDevices = topology?.features?.filter(f => f.geometry.type === 'Point' && f.properties.status === 'online').length ?? 0;
-    const totalDevices = topology?.features?.filter(f => f.geometry.type === 'Point').length ?? 0;
+    const pointFeatures = topology?.features?.filter(f => f.geometry.type === 'Point') || [];
+    const onlineDevices = pointFeatures.filter(f => f.properties.status === 'online').length;
+    const totalDevices = pointFeatures.length;
     
-    const avgCpu = Object.keys(liveMetrics.current).length > 0
-        ? Object.values(liveMetrics.current).reduce((acc, curr) => acc + curr.cpu, 0) / Object.keys(liveMetrics.current).length
+    const currentMetrics = liveMetrics?.current ? Object.values(liveMetrics.current) : [];
+    const avgCpu = currentMetrics.length > 0
+        ? currentMetrics.reduce((acc, curr) => acc + (curr.cpu || 0), 0) / currentMetrics.length
         : 0;
 
     const stats = [
@@ -70,10 +69,7 @@ const DashboardPage = () => {
                         )) : <li className="p-2">Keine neuen Incidents.</li>}
                     </ul>
                 </div>
-
                 <ScenarioControl />
-                
-                {/* NEUE KOMPONENTE HIER EINGEFÜGT */}
                 <SecurityControl />
             </div>
         </div>

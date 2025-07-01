@@ -2,8 +2,8 @@ import asyncio
 from fastapi import FastAPI, WebSocket, Request
 from fastapi.middleware.cors import CORSMiddleware
 
-# Router-Importe
-from app.routers import auth, users, topology, simulation_actions, forensics, scenarios, devices
+# Router-Importe (NEU: sandbox!)
+from app.routers import auth, users, topology, simulation_actions, forensics, scenarios, devices, sandbox
 
 app = FastAPI(
     title="UltraNOC - Digital Twin Edition",
@@ -21,18 +21,16 @@ app.add_middleware(
 
 @app.on_event("startup")
 async def startup_event():
-    # Saubere Initialisierung der Engine nach dem App-Start
     from app.simulation.simulation_engine import SimulationEngine
     sim_engine = SimulationEngine()
     app.state.sim_engine = sim_engine
-    
+
     loop = asyncio.get_event_loop()
     app.state.simulation_task = loop.create_task(sim_engine.run_simulation_loop())
     print("Simulations-Engine im Hintergrund gestartet.")
 
 @app.on_event("shutdown")
 async def shutdown_event():
-    # Engine und Hintergrundtask sauber beenden/speichern
     if hasattr(app.state, 'simulation_task'):
         app.state.simulation_task.cancel()
     if hasattr(app.state, 'sim_engine'):
@@ -41,17 +39,14 @@ async def shutdown_event():
 
 @app.websocket("/ws/live-updates")
 async def websocket_endpoint(websocket: WebSocket):
-    # Zugriff auf sim_engine aus dem App-State
     sim_engine = websocket.app.state.sim_engine
     await sim_engine.manager.connect(websocket)
     try:
         while True:
-            # Einfach offen halten, um Updates zu pushen.
             await websocket.receive_text()
     except Exception:
         sim_engine.manager.disconnect(websocket)
 
-# Middleware, um sim_engine für Router und Endpoints verfügbar zu machen
 @app.middleware("http")
 async def sim_engine_middleware(request: Request, call_next):
     if hasattr(app.state, 'sim_engine'):
@@ -68,6 +63,7 @@ app.include_router(simulation_actions.router, prefix=f"{api_prefix}/simulation",
 app.include_router(forensics.router, prefix=f"{api_prefix}/forensics", tags=["Forensics"])
 app.include_router(scenarios.router, prefix=f"{api_prefix}/scenarios", tags=["Scenarios"])
 app.include_router(devices.router, prefix=f"{api_prefix}/devices", tags=["Devices"])
+app.include_router(sandbox.router, prefix=f"{api_prefix}/sandbox", tags=["Sandbox"])   # <-- NEU
 
 @app.get("/")
 def read_root():

@@ -1,49 +1,71 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useContext } from 'react';
+import { TopologyContext } from './TopologyContext';
 
 export const SandboxContext = createContext();
 
 export const SandboxProvider = ({ children }) => {
-    const [sandboxMode, setSandboxMode] = useState('view');
+    const [sandboxMode, setSandboxMode] = useState('view'); // view, addNode, addLinkStart, addLinkEnd
+    const [nodeTypeToAdd, setNodeTypeToAdd] = useState('');
     const [linkSourceNode, setLinkSourceNode] = useState(null);
     const [deviceTemplates, setDeviceTemplates] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [selectedTemplateId, setSelectedTemplateId] = useState('');
-    const [topology, setTopology] = useState({ type: "FeatureCollection", features: [] });
+    
+    const { setTopology } = useContext(TopologyContext);
 
     useEffect(() => {
         const fetchDeviceTemplates = async () => {
-            setIsLoading(true);
             const token = localStorage.getItem('ultranoc_token');
             try {
                 const response = await fetch('/api/v1/topology/device-templates', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-                if (!response.ok) throw new Error('Failed to fetch templates');
                 const data = await response.json();
                 setDeviceTemplates(data);
                 if (data.length > 0) {
-                    setSelectedTemplateId(data[0].id);
+                    setNodeTypeToAdd(data[0].id);
                 }
             } catch (error) {
-                console.error("Error loading device templates for sandbox:", error);
-            } finally {
-                setIsLoading(false);
+                console.error("Failed to load device templates:", error);
             }
         };
         fetchDeviceTemplates();
     }, []);
 
+    const addNode = (latlng) => {
+        const selectedTemplate = deviceTemplates.find(t => t.id === nodeTypeToAdd) || { name: 'Device', type: 'Generic' };
+        const newNode = {
+            type: "Feature",
+            geometry: { type: "Point", coordinates: [latlng.lng, latlng.lat] },
+            properties: { 
+                id: `node-${Date.now()}`, 
+                label: `New ${selectedTemplate.name}`, 
+                type: selectedTemplate.type, 
+                template_id: selectedTemplate.id,
+                status: 'online', 
+                details: {}
+            }
+        };
+        setTopology(prev => ({ ...prev, features: [...prev.features, newNode] }));
+        setSandboxMode('view');
+    };
+
+    const addLink = (targetNode) => {
+        if (!linkSourceNode || linkSourceNode.properties.id === targetNode.properties.id) return;
+        const newLink = {
+            type: "Feature",
+            geometry: { type: "LineString", coordinates: [ linkSourceNode.geometry.coordinates, targetNode.geometry.coordinates ] },
+            properties: { source: linkSourceNode.properties.id, target: targetNode.properties.id, status: 'online', type: 'Fiber Link' }
+        };
+        setTopology(prev => ({ ...prev, features: [...prev.features, newLink] }));
+        setSandboxMode('view');
+        setLinkSourceNode(null);
+    };
+
     const value = {
-        sandboxMode,
-        setSandboxMode,
-        linkSourceNode,
-        setLinkSourceNode,
+        sandboxMode, setSandboxMode,
+        nodeTypeToAdd, setNodeTypeToAdd,
+        linkSourceNode, setLinkSourceNode,
         deviceTemplates,
-        isLoading,
-        selectedTemplateId, 
-        setSelectedTemplateId, // KORRIGIERT: Diese Funktion wird jetzt bereitgestellt
-        topology,
-        setTopology
+        addNode, addLink
     };
 
     return (

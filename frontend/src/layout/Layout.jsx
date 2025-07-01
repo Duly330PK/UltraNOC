@@ -1,12 +1,10 @@
-// frontend/src/layout/Layout.jsx
-
 import React, { useContext } from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
 import { CommandMenuContext } from '../contexts/CommandMenuContext';
-// NEU: ThemeContext und Icons importieren
 import { ThemeContext } from '../contexts/ThemeContext';
 import { BarChart2, Compass, Globe, Shield, Search, LogOut, TerminalSquare, Box, HardDrive, Moon, Sun } from 'lucide-react';
+import GlobalSearch from '../components/shared/GlobalSearch'; // Import the new component
 
 const navItems = [
     { path: '/dashboard', label: 'Dashboard', icon: <BarChart2 size={18} /> },
@@ -21,11 +19,9 @@ const navItems = [
 const Layout = () => {
     const { logout } = useContext(AuthContext);
     const { toggleCommandMenu } = useContext(CommandMenuContext);
-    // NEU: Theme-Status und Umschalt-Funktion aus dem Context holen
     const { theme, toggleTheme } = useContext(ThemeContext);
 
     return (
-        // NEU: CSS-Klassen für Light/Dark-Mode hinzugefügt
         <div className="flex h-screen bg-lm-bg text-lm-text dark:bg-noc-dark dark:text-noc-text">
             {/* Sidebar */}
             <aside className="w-64 bg-lm-bg-secondary dark:bg-noc-light-dark flex-shrink-0 flex flex-col border-r border-lm-border dark:border-noc-border">
@@ -53,7 +49,6 @@ const Layout = () => {
                     ))}
                 </nav>
                 <div className="px-2 py-4 border-t border-lm-border dark:border-noc-border space-y-2">
-                    {/* NEU: Theme-Umschalter */}
                     <button
                         onClick={toggleTheme}
                         className="w-full flex items-center gap-3 px-3 py-2 text-lm-text-secondary dark:text-noc-text-secondary rounded-md text-sm font-medium hover:bg-lm-border dark:hover:bg-noc-border transition-colors duration-200"
@@ -81,6 +76,10 @@ const Layout = () => {
 
             {/* Main Content */}
             <div className="flex-1 flex flex-col overflow-hidden">
+                {/* NEW: Main Header with Global Search */}
+                <header className="flex-shrink-0 bg-lm-bg-secondary dark:bg-noc-light-dark border-b border-lm-border dark:border-noc-border h-16 flex items-center px-6">
+                    <GlobalSearch />
+                </header>
                 <main className="flex-1 overflow-x-hidden overflow-y-auto bg-lm-bg dark:bg-noc-dark">
                     <Outlet />
                 </main>
