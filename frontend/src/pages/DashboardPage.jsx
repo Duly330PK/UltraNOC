@@ -17,14 +17,15 @@ const StatCard = ({ label, value, color, icon }) => (
 );
 
 const DashboardPage = () => {
-    // FIX: Add robust guards to prevent any crashes from undefined data
+    // FIX: Add ultra-robust guards to prevent any crashes from undefined or intermediate state data
     const { incidents = [], securityEvents = [], topology = {}, liveMetrics = {} } = useContext(TopologyContext);
 
     const pointFeatures = topology?.features?.filter(f => f.geometry?.type === 'Point') || [];
     const onlineDevices = pointFeatures.filter(f => f.properties?.status === 'online').length;
     const totalDevices = pointFeatures.length;
     
-    const currentMetrics = liveMetrics?.current ? Object.values(liveMetrics.current) : [];
+    // THE CRITICAL FIX: Ensure liveMetrics and liveMetrics.current exist before processing
+    const currentMetrics = liveMetrics && liveMetrics.current ? Object.values(liveMetrics.current) : [];
     const avgCpu = currentMetrics.length > 0
         ? currentMetrics.reduce((acc, curr) => acc + (curr?.cpu || 0), 0) / currentMetrics.length
         : 0;

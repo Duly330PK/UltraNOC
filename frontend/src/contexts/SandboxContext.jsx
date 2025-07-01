@@ -44,7 +44,6 @@ export const SandboxProvider = ({ children }) => {
         setSandboxMode('view');
     };
 
-    // FIX: Simplified logic to be more robust
     const handleLinkNodeClick = (targetNode) => {
         if (sandboxMode === 'addLinkStart') {
             setLinkSourceNode(targetNode);
@@ -59,7 +58,6 @@ export const SandboxProvider = ({ children }) => {
                 };
                 setTopology(prev => ({ ...prev, features: [...prev.features, newLink] }));
             }
-            // Always reset after the second click
             setSandboxMode('view');
             setLinkSourceNode(null);
         }

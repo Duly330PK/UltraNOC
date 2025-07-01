@@ -14,15 +14,22 @@ import { CommandMenuContext } from './contexts/CommandMenuContext';
 import { AuthContext } from './contexts/AuthContext';
 import { TopologyProvider } from './contexts/TopologyContext';
 import { SandboxProvider } from './contexts/SandboxContext';
-// FIX: Ensure 3D page is imported and routed correctly
-import Topology3DPage from './pages/Topology3DPage';
 
 function App() {
   const { toggleCommandMenu } = useContext(CommandMenuContext);
   const { logout } = useContext(AuthContext);
 
   useEffect(() => {
-    // ... (event listener logic if needed)
+    const handleKeyDown = (e) => {
+      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) e.preventDefault(), toggleCommandMenu();
+    };
+    const handleLogout = () => logout();
+    document.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('logout-request', handleLogout);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('logout-request', handleLogout);
+    };
   }, [toggleCommandMenu, logout]);
 
   const AuthenticatedLayout = () => (
@@ -42,8 +49,7 @@ function App() {
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="topology" element={<TopologyPage />} />
-          {/* 3D Topology is now its own, independent page */}
-          <Route path="topology-3d" element={<Topology3DPage />} />
+          {/* Route for 3D topology is removed to prevent errors until the component is ready */}
           <Route path="incidents" element={<IncidentsPage />} />
           <Route path="forensics" element={<ForensicsPage />} />
           <Route path="devices" element={<DeviceListPage />} />
