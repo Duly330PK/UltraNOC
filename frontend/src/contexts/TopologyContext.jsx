@@ -1,6 +1,5 @@
 import React, { createContext, useState, useEffect, useCallback, useContext, useRef } from 'react';
 import { AuthContext } from './AuthContext';
-import L from 'leaflet';
 
 export const TopologyContext = createContext();
 
@@ -20,19 +19,14 @@ export const TopologyProvider = ({ children }) => {
         try {
             const response = await fetch('/api/v1/sandbox/load', { headers: { 'Authorization': `Bearer ${token}` } });
             if (response.ok) {
-                const data = await response.json();
-                setTopology(data || { type: "FeatureCollection", features: [] });
+                setTopology(await response.json() || { type: "FeatureCollection", features: [] });
             } else if (response.status === 401) {
                 logout();
             }
         } catch (error) { console.error("Failed to load topology:", error); }
     }, [token, logout]);
 
-    useEffect(() => {
-        if (isAuthenticated) {
-            fetchTopology();
-        }
-    }, [isAuthenticated, fetchTopology]);
+    useEffect(() => { if (isAuthenticated) fetchTopology(); }, [isAuthenticated, fetchTopology]);
 
     useEffect(() => {
         if (!isAuthenticated) return;
@@ -45,7 +39,6 @@ export const TopologyProvider = ({ children }) => {
             const wsUrl = `${wsProtocol}${window.location.host}/ws/live-updates`;
             
             socket = new WebSocket(wsUrl);
-
             socket.onopen = () => console.log("WebSocket-Verbindung geöffnet.");
 
             socket.onmessage = (event) => {
@@ -54,26 +47,16 @@ export const TopologyProvider = ({ children }) => {
                     const { type, payload } = message;
 
                     if (type === 'node_update') {
-                        setTopology(prev => ({
-                            ...prev,
-                            features: prev.features.map(f => 
-                                f.properties.id === payload.id ? { ...f, properties: { ...f.properties, status: payload.status } } : f
-                            )
-                        }));
+                        setTopology(prev => ({ ...prev, features: prev.features.map(f => f.properties.id === payload.id ? { ...f, properties: { ...f.properties, status: payload.status } } : f) }));
                     } else if (type === 'metrics_update') {
-                        // FINAL FIX: Make this state update absolutely robust.
                         setLiveMetrics(prev => {
                             const newCurrent = { ...(prev.current || {}), ...payload };
                             const newHistory = { ...(prev.history || {}) };
-
-                            // Safely iterate over the payload keys
                             for (const nodeId in payload) {
-                                // Check if the payload for this node and its history property exist and is an array
                                 if (payload[nodeId] && Array.isArray(payload[nodeId].history)) {
                                     newHistory[nodeId] = payload[nodeId].history;
                                 }
                             }
-                            
                             return { current: newCurrent, history: newHistory };
                         });
                     } else if (type === 'security_event') {
@@ -88,15 +71,10 @@ export const TopologyProvider = ({ children }) => {
             };
 
             socket.onclose = () => {
-                console.log("WebSocket-Verbindung geschlossen. Erneuter Verbindungsversuch in 5s.");
                 clearTimeout(reconnectTimer);
                 reconnectTimer = setTimeout(connectWebSocket, 5000);
             };
-
-            socket.onerror = (error) => {
-                console.error("WebSocket-Fehler:", error);
-                socket.close();
-            };
+            socket.onerror = (error) => socket.close();
         };
 
         connectWebSocket();
@@ -104,16 +82,13 @@ export const TopologyProvider = ({ children }) => {
         return () => {
             clearTimeout(reconnectTimer);
             if (socket) {
-                socket.onclose = null; // Prevent reconnect attempts on manual cleanup
+                socket.onclose = null;
                 socket.close();
             }
         };
     }, [isAuthenticated]);
 
-    const selectElement = (element) => {
-        setSelectedElement(element);
-    };
-
+    const selectElement = (element) => setSelectedElement(element);
     const focusOnElement = (element) => {
         if (element?.geometry?.type === 'Point' && mapRef.current) {
             const [lng, lat] = element.geometry.coordinates;

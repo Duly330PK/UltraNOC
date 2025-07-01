@@ -23,8 +23,8 @@ export const SandboxProvider = ({ children }) => {
                 }
             } catch (error) { console.error("Failed to load device templates:", error); }
         };
-        if(children) fetchDeviceTemplates(); // Only fetch if context is actually used
-    }, [children]);
+        fetchDeviceTemplates();
+    }, []);
 
     const addNode = (latlng) => {
         const selectedTemplate = deviceTemplates.find(t => t.id === nodeTypeToAdd) || { name: 'Device', type: 'Generic' };
@@ -58,6 +58,7 @@ export const SandboxProvider = ({ children }) => {
                 };
                 setTopology(prev => ({ ...prev, features: [...(prev.features || []), newLink] }));
             }
+            // FIX: Always reset to view mode after the second click
             setSandboxMode('view');
             setLinkSourceNode(null);
         }

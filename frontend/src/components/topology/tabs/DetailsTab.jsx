@@ -42,12 +42,14 @@ const LiveMetricGraph = ({ data, dataKey, stroke, unit }) => (
 const DetailsTab = ({ element }) => {
     const { liveMetrics } = useContext(TopologyContext);
     const elementId = element.properties.id;
-    const metricsHistory = liveMetrics.history[elementId] || [];
+    // FIX: Ensure liveMetrics and its history property exist before trying to access them
+    const metricsHistory = liveMetrics?.history?.[elementId] || [];
     const isNode = element.geometry.type === 'Point';
+    const isPassive = element.properties.is_passive || false;
 
     return (
         <div className="text-sm font-mono whitespace-pre-wrap">
-            {isNode && element.properties.type !== 'Muffe' && (
+            {isNode && !isPassive && (
                 <div className="mb-4 p-3 bg-noc-dark rounded-md border border-noc-border">
                    <h4 className="text-md text-noc-text-secondary mb-2 font-sans font-bold">Live Metriken</h4>
                    <div>CPU Auslastung (%)</div>

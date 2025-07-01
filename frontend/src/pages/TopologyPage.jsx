@@ -60,15 +60,14 @@ const TopologyPage = ({ isSandbox = false }) => {
     const { topology, selectElement, selectedElement, mapRef } = useContext(TopologyContext);
     const sandboxCtx = useContext(SandboxContext);
 
+    const nodes = (topology.features || []).filter(f => f.geometry.type === 'Point');
+    const links = (topology.features || []).filter(f => f.geometry.type === 'LineString');
+
     const onEachFeature = (feature, layer) => {
         layer.on('click', (e) => {
             L.DomEvent.stopPropagation(e);
-            if (isSandbox && sandboxCtx) {
-                if (sandboxCtx.sandboxMode.startsWith('addLink')) {
-                    sandboxCtx.handleLinkNodeClick(feature);
-                } else {
-                    selectElement(feature);
-                }
+            if (isSandbox && sandboxCtx?.sandboxMode.startsWith('addLink')) {
+                sandboxCtx.handleLinkNodeClick(feature);
             } else {
                 selectElement(feature);
             }
@@ -77,7 +76,7 @@ const TopologyPage = ({ isSandbox = false }) => {
     
     const styleFeature = (feature) => {
         const props = feature.properties || {};
-        const isSelected = selectedElement && selectedElement.properties && selectedElement.properties.id === props.id;
+        const isSelected = selectedElement && selectedElement.properties && (selectedElement.properties.id === props.id || (selectedElement.properties.source === props.source && selectedElement.properties.target === props.target));
         return {
             color: getStatusColor(props.status),
             weight: isSelected ? 5 : 3,
@@ -85,23 +84,30 @@ const TopologyPage = ({ isSandbox = false }) => {
         };
     };
 
-    const pointToLayer = (feature, latlng) => {
-        return L.marker(latlng, {
-            icon: createDeviceIcon(feature.properties.type, feature.properties.status)
-        });
-    };
-
     return (
         <MapContainer ref={mapRef} center={[52.51, 13.42]} zoom={12} style={{ height: '100%', width: '100%' }}>
             <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" attribution='© CARTO' />
             <MapEventsHandler isSandbox={isSandbox} />
+            
+            {/* Render Links */}
             <GeoJSON
-                key={JSON.stringify(topology) + JSON.stringify(selectedElement)}
-                data={topology}
+                key={`links-${JSON.stringify(links)}`}
+                data={{ type: 'FeatureCollection', features: links }}
                 style={styleFeature}
                 onEachFeature={onEachFeature}
-                pointToLayer={pointToLayer}
             />
+            
+            {/* Render Nodes */}
+            {nodes.map(node => (
+                <Marker
+                    key={node.properties.id}
+                    position={[node.geometry.coordinates[1], node.geometry.coordinates[0]]}
+                    icon={createDeviceIcon(node.properties.type, node.properties.status)}
+                    eventHandlers={{
+                        click: (e) => onEachFeature(node, e.target)
+                    }}
+                />
+            ))}
         </MapContainer>
     );
 };
