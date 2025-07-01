@@ -1,10 +1,14 @@
 import React, { createContext, useState, useEffect, useCallback, useContext, useRef } from 'react';
 import { AuthContext } from './AuthContext';
+import L from 'leaflet';
 
 export const TopologyContext = createContext();
 
 export const TopologyProvider = ({ children }) => {
     const [topology, setTopology] = useState({ type: "FeatureCollection", features: [] });
+    const [liveMetrics, setLiveMetrics] = useState({ current: {}, history: {} });
+    const [incidents, setIncidents] = useState([]);
+    const [securityEvents, setSecurityEvents] = useState([]);
     const [selectedElement, setSelectedElement] = useState(null);
     const [focusedElement, setFocusedElement] = useState(null);
     const { isAuthenticated, token, logout } = useContext(AuthContext);
@@ -16,55 +20,113 @@ export const TopologyProvider = ({ children }) => {
         try {
             const response = await fetch('/api/v1/sandbox/load', { headers: { 'Authorization': `Bearer ${token}` } });
             if (response.ok) {
-                setTopology(await response.json() || { type: "FeatureCollection", features: [] });
+                const data = await response.json();
+                setTopology(data || { type: "FeatureCollection", features: [] });
             } else if (response.status === 401) {
                 logout();
             }
         } catch (error) { console.error("Failed to load topology:", error); }
     }, [token, logout]);
 
-    useEffect(() => { if (isAuthenticated) fetchTopology(); }, [isAuthenticated, fetchTopology]);
+    useEffect(() => {
+        if (isAuthenticated) {
+            fetchTopology();
+        }
+    }, [isAuthenticated, fetchTopology]);
+
+    useEffect(() => {
+        if (!isAuthenticated) return;
+
+        let socket;
+        let reconnectTimer;
+
+        const connectWebSocket = () => {
+            const wsProtocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+            const wsUrl = `${wsProtocol}${window.location.host}/ws/live-updates`;
+            
+            socket = new WebSocket(wsUrl);
+
+            socket.onopen = () => console.log("WebSocket-Verbindung geöffnet.");
+
+            socket.onmessage = (event) => {
+                try {
+                    const message = JSON.parse(event.data);
+                    const { type, payload } = message;
+
+                    if (type === 'node_update') {
+                        setTopology(prev => ({
+                            ...prev,
+                            features: prev.features.map(f => 
+                                f.properties.id === payload.id ? { ...f, properties: { ...f.properties, status: payload.status } } : f
+                            )
+                        }));
+                    } else if (type === 'metrics_update') {
+                        // FINAL FIX: Make this state update absolutely robust.
+                        setLiveMetrics(prev => {
+                            const newCurrent = { ...(prev.current || {}), ...payload };
+                            const newHistory = { ...(prev.history || {}) };
+
+                            // Safely iterate over the payload keys
+                            for (const nodeId in payload) {
+                                // Check if the payload for this node and its history property exist and is an array
+                                if (payload[nodeId] && Array.isArray(payload[nodeId].history)) {
+                                    newHistory[nodeId] = payload[nodeId].history;
+                                }
+                            }
+                            
+                            return { current: newCurrent, history: newHistory };
+                        });
+                    } else if (type === 'security_event') {
+                        setSecurityEvents(prev => [payload, ...prev].slice(0, 100));
+                    } else if (type === 'new_incident') {
+                        setIncidents(prev => [payload, ...prev]);
+                    } else if (type === 'clear_security_state') {
+                        setIncidents([]);
+                        setSecurityEvents([]);
+                    }
+                } catch (e) { console.error("WebSocket message processing error:", e); }
+            };
+
+            socket.onclose = () => {
+                console.log("WebSocket-Verbindung geschlossen. Erneuter Verbindungsversuch in 5s.");
+                clearTimeout(reconnectTimer);
+                reconnectTimer = setTimeout(connectWebSocket, 5000);
+            };
+
+            socket.onerror = (error) => {
+                console.error("WebSocket-Fehler:", error);
+                socket.close();
+            };
+        };
+
+        connectWebSocket();
+
+        return () => {
+            clearTimeout(reconnectTimer);
+            if (socket) {
+                socket.onclose = null; // Prevent reconnect attempts on manual cleanup
+                socket.close();
+            }
+        };
+    }, [isAuthenticated]);
 
     const selectElement = (element) => {
         setSelectedElement(element);
     };
 
     const focusOnElement = (element) => {
-        if (element?.geometry.type === 'Point' && mapRef.current) {
+        if (element?.geometry?.type === 'Point' && mapRef.current) {
             const [lng, lat] = element.geometry.coordinates;
             mapRef.current.flyTo([lat, lng], 16);
         }
         selectElement(element);
     };
-    
-    // NEW: Function to delete a specific element and its connected links
-    const deleteElement = (elementId) => {
-        setTopology(prev => {
-            // Remove the node itself
-            const newFeatures = prev.features.filter(f => f.properties.id !== elementId);
-            // Remove any links connected to the node
-            const finalFeatures = newFeatures.filter(f => 
-                f.geometry.type !== 'LineString' || 
-                (f.properties.source !== elementId && f.properties.target !== elementId)
-            );
-            return { ...prev, features: finalFeatures };
-        });
-        setSelectedElement(null); // Deselect after deletion
-    };
-
-    // NEW: Function to clear the entire sandbox
-    const clearTopology = () => {
-        setTopology({ type: "FeatureCollection", features: [] });
-        setSelectedElement(null);
-    };
 
     const value = {
         topology, setTopology,
+        liveMetrics, incidents, securityEvents,
         selectedElement, selectElement,
-        focusedElement, focusOnElement,
-        mapRef,
-        deleteElement, // Expose the new delete function
-        clearTopology  // Expose the new clear function
+        mapRef, focusOnElement
     };
 
     return <TopologyContext.Provider value={value}>{children}</TopologyContext.Provider>;
