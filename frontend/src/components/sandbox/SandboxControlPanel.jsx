@@ -1,10 +1,10 @@
 import React, { useContext, useState } from 'react';
-import { Plus, GitPullRequest, Save } from 'lucide-react';
+import { Plus, GitPullRequest, Save, Trash2 } from 'lucide-react';
 import { TopologyContext } from '../../contexts/TopologyContext';
 import { SandboxContext } from '../../contexts/SandboxContext';
 
 const SandboxControlPanel = () => {
-    const { topology } = useContext(TopologyContext);
+    const { topology, clearTopology } = useContext(TopologyContext); // Clear function aus Context
     const { sandboxMode, setSandboxMode, nodeTypeToAdd, setNodeTypeToAdd, setLinkSourceNode, deviceTemplates } = useContext(SandboxContext);
     const [isSaving, setIsSaving] = useState(false);
 
@@ -30,7 +30,13 @@ const SandboxControlPanel = () => {
             setIsSaving(false);
         }
     };
-    
+
+    const handleClearSandbox = () => {
+        if (window.confirm("Sind Sie sicher, dass Sie alle Knoten und Verbindungen in der Sandbox löschen möchten?")) {
+            clearTopology();
+        }
+    };
+
     const handleStartAddLink = () => {
         setSandboxMode('addLinkStart');
         setLinkSourceNode(null);
@@ -81,6 +87,13 @@ const SandboxControlPanel = () => {
                     className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-md text-sm font-medium bg-noc-green text-white hover:bg-opacity-80 disabled:opacity-50"
                 >
                     <Save size={16}/> {isSaving ? 'Speichert...' : 'Topologie Speichern'}
+                </button>
+                {/* NEU: Sandbox leeren */}
+                <button 
+                    onClick={handleClearSandbox}
+                    className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-md text-sm font-medium bg-noc-red text-white hover:bg-opacity-80"
+                >
+                    <Trash2 size={16}/> Sandbox leeren
                 </button>
             </div>
         </div>

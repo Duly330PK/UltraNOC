@@ -1,20 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { TopologyContext } from '../../../contexts/TopologyContext';
+import { Trash2 } from 'lucide-react';
 
-const ActionButton = ({ label, onClick, color = 'noc-blue', disabled = false }) => (
+const ActionButton = ({ label, onClick, color = 'noc-blue', disabled = false, icon = null }) => (
   <button
     onClick={onClick}
     disabled={disabled}
-    className={`w-full text-left px-4 py-2 mt-2 text-white rounded-md bg-${color} hover:bg-opacity-80 transition-all disabled:bg-noc-border disabled:text-noc-text-secondary disabled:cursor-not-allowed`}
+    className={`w-full text-left px-4 py-2 mt-2 text-white rounded-md bg-${color} hover:bg-opacity-80 transition-all disabled:bg-noc-border disabled:text-noc-text-secondary disabled:cursor-not-allowed flex items-center gap-2`}
   >
+    {icon}
     {label}
   </button>
 );
 
-const ActionsTab = ({ element }) => {
+const ActionsTab = ({ element, isSandbox }) => {
+    const { deleteElement } = useContext(TopologyContext);
     const [isChecking, setIsChecking] = useState(false);
     const [checkResult, setCheckResult] = useState(null);
 
-    // Reset state when element changes
     useEffect(() => {
         setIsChecking(false);
         setCheckResult(null);
@@ -39,6 +42,12 @@ const ActionsTab = ({ element }) => {
         }
     };
 
+    const handleDeleteNode = () => {
+        if (window.confirm(`Sind Sie sicher, dass Sie den Knoten "${element.properties.label}" und alle seine Verbindungen löschen möchten?`)) {
+            deleteElement(element.properties.id);
+        }
+    };
+
     const handleFieldServiceRequest = async () => {
         setIsChecking(true);
         setCheckResult(null);
@@ -50,12 +59,25 @@ const ActionsTab = ({ element }) => {
     const renderActions = () => {
         const { type, status, is_passive } = element.properties;
 
+        // Sandbox-Modus: nur löschen-Button
+        if (isSandbox) {
+            return (
+                <ActionButton
+                    label="Knoten löschen"
+                    onClick={handleDeleteNode}
+                    color="noc-red"
+                    icon={<Trash2 size={16} />}
+                />
+            );
+        }
+
+        // Passives Element (z.B. Muffe/Feldtechnik)
         if (is_passive) {
             return (
                 <div>
-                    <ActionButton 
+                    <ActionButton
                         label={isChecking ? "Techniker ist unterwegs..." : "Außendienst anfordern"}
-                        onClick={handleFieldServiceRequest} 
+                        onClick={handleFieldServiceRequest}
                         color="noc-purple"
                         disabled={isChecking}
                     />
@@ -78,6 +100,7 @@ const ActionsTab = ({ element }) => {
             );
         }
 
+        // Aktive Netzwerkgeräte
         switch (type) {
             case 'MPLS Core Router':
             case 'Broadband Network Gateway':
